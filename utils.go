@@ -1,6 +1,5 @@
 package freeze
 
-// DOCS:
 type testingT interface {
 	Helper()
 	Skip(...any)

@@ -14,7 +14,7 @@ func TestSnapString(t *testing.T) {
 }
 
 func TestSnapMultiple(t *testing.T) {
-	freeze.Snap(t, "value1", "value2", 42)
+	freeze.Snap(t, "value1", "value2", 42, "foo", "bar", "baz", "wibble", "wobble", "tick")
 }
 
 type CustomStruct struct {
@@ -32,6 +32,12 @@ func TestSnapCustomType(t *testing.T) {
 		Age:  30,
 	}
 	freeze.Snap(t, cs)
+}
+
+func TestMap(t *testing.T) {
+	freeze.Snap(t, map[string]any{
+		"foo": "bar",
+	})
 }
 
 func TestSerializeDeserialize(t *testing.T) {
@@ -83,7 +89,7 @@ func TestFileOperations(t *testing.T) {
 		t.Errorf("content mismatch: %s != %s", read.Content, snap.Content)
 	}
 
-	cleanupTestSnapshots(t)
+	// cleanupTestSnapshots(t)
 }
 
 func TestSnapshotFileName(t *testing.T) {
@@ -216,6 +222,6 @@ func cleanupTestSnapshots(t *testing.T) {
 		return
 	}
 
-	snapshotDir := filepath.Join(cwd, "freeze_snapshots")
+	snapshotDir := filepath.Join(cwd, "__snapshots__")
 	_ = os.RemoveAll(snapshotDir)
 }

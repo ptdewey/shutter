@@ -83,6 +83,7 @@ func formatValues(values ...any) string {
 	return result
 }
 
+// TODO: improve this
 func formatValue(v any) string {
 	if v == nil {
 		return "<nil>"
