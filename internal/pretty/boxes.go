@@ -29,7 +29,7 @@ func NewSnapshotBox(snap *files.Snapshot) string {
 	sb.WriteString(strings.Repeat("─", width+2) + "\n")
 	// TODO: "New Snapshot" should be above this line, in default color.
 	// - color should be on test name and path
-	sb.WriteString(fmt.Sprintf("  %s \n", Blue("New Snapshot -- \""+snap.TestName+"\"")))
+	sb.WriteString(fmt.Sprintf("  %s \n", Blue("New Snapshot -- \""+snap.Name+"\"")))
 
 	lines := strings.Split(snap.Content, "\n")
 	numLines := len(lines)

@@ -38,9 +38,9 @@ func snapWithTitle(t testingT, title string, content string) {
 	t.Helper()
 
 	snapshot := &files.Snapshot{
-		Version:  version,
-		TestName: title,
-		Content:  content,
+		Version: version,
+		Name:    title,
+		Content: content,
 	}
 
 	accepted, err := files.ReadAccepted(title)

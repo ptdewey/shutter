@@ -42,9 +42,9 @@ func TestMap(t *testing.T) {
 
 func TestSerializeDeserialize(t *testing.T) {
 	snap := &freeze.Snapshot{
-		Version:  "1.0.0",
-		TestName: "TestExample",
-		Content:  "test content\nmultiline",
+		Version: "1.0.0",
+		Name:    "TestExample",
+		Content: "test content\nmultiline",
 	}
 
 	serialized := snap.Serialize()
@@ -61,8 +61,8 @@ func TestSerializeDeserialize(t *testing.T) {
 	if deserialized.Version != snap.Version {
 		t.Errorf("version mismatch: %s != %s", deserialized.Version, snap.Version)
 	}
-	if deserialized.TestName != snap.TestName {
-		t.Errorf("test name mismatch: %s != %s", deserialized.TestName, snap.TestName)
+	if deserialized.Name != snap.Name {
+		t.Errorf("test name mismatch: %s != %s", deserialized.Name, snap.Name)
 	}
 	if deserialized.Content != snap.Content {
 		t.Errorf("content mismatch: %s != %s", deserialized.Content, snap.Content)
@@ -71,9 +71,9 @@ func TestSerializeDeserialize(t *testing.T) {
 
 func TestFileOperations(t *testing.T) {
 	snap := &freeze.Snapshot{
-		Version:  "0.1.0",
-		TestName: "TestFileOps",
-		Content:  "file test content",
+		Version: "0.1.0",
+		Name:    "TestFileOps",
+		Content: "file test content",
 	}
 
 	if err := freeze.SaveSnapshot(snap, "test"); err != nil {
@@ -151,15 +151,15 @@ func TestHistogramDiff(t *testing.T) {
 
 func TestDiffSnapshotBox(t *testing.T) {
 	old := &freeze.Snapshot{
-		Version:  "0.1.0",
-		TestName: "TestDiff",
-		Content:  "old content",
+		Version: "0.1.0",
+		Name:    "TestDiff",
+		Content: "old content",
 	}
 
 	new := &freeze.Snapshot{
-		Version:  "0.1.0",
-		TestName: "TestDiff",
-		Content:  "new content",
+		Version: "0.1.0",
+		Name:    "TestDiff",
+		Content: "new content",
 	}
 
 	box := freeze.DiffSnapshotBox(old, new)
@@ -174,9 +174,9 @@ func TestDiffSnapshotBox(t *testing.T) {
 
 func TestNewSnapshotBox(t *testing.T) {
 	snap := &freeze.Snapshot{
-		Version:  "0.1.0",
-		TestName: "TestNew",
-		Content:  "test content",
+		Version: "0.1.0",
+		Name:    "TestNew",
+		Content: "test content",
 	}
 
 	box := freeze.NewSnapshotBox(snap)

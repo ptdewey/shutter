@@ -17,6 +17,9 @@ const (
 	Accept ReviewChoice = iota
 	Reject
 	Skip
+	AcceptAllChoice
+	RejectAllChoice
+	SkipAllChoice
 	// ToggleDiff
 	Quit
 )
@@ -97,6 +100,25 @@ func reviewLoop(snapshots []string) error {
 				}
 			case Skip:
 				fmt.Println(pretty.Warning("⊘ Snapshot skipped"))
+			case AcceptAllChoice:
+				for j := i; j < len(snapshots); j++ {
+					if err := files.AcceptSnapshot(snapshots[j]); err != nil {
+						fmt.Println(pretty.Error("✗ Failed to accept snapshot: " + err.Error()))
+					}
+				}
+				fmt.Printf(pretty.Success("✓ Accepted %d snapshot(s)\n"), len(snapshots)-i)
+				return nil
+			case RejectAllChoice:
+				for j := i; j < len(snapshots); j++ {
+					if err := files.RejectSnapshot(snapshots[j]); err != nil {
+						fmt.Println(pretty.Error("✗ Failed to reject snapshot: " + err.Error()))
+					}
+				}
+				fmt.Printf(pretty.Warning("⊘ Rejected %d snapshot(s)\n"), len(snapshots)-i)
+				return nil
+			case SkipAllChoice:
+				fmt.Printf(pretty.Warning("⊘ Skipped %d snapshot(s)\n"), len(snapshots)-i)
+				return nil
 			// case ToggleDiff:
 			// 	showDiff = !showDiff
 			// 	if acceptErr == nil {
@@ -119,15 +141,14 @@ func reviewLoop(snapshots []string) error {
 }
 
 func askChoice(reader *bufio.Reader, current, total int) (ReviewChoice, error) {
-	// fmt.Printf("\nOptions: [a]ccept [r]eject [s]kip [d]iff [q]uit: ")
-	fmt.Printf("\nOptions: [a]ccept [r]eject [s]kip [q]uit: ")
+	fmt.Printf("\nOptions: [a]ccept [r]eject [s]kip [A]ccept All [R]eject All [S]kip All [q]uit: ")
 
 	input, err := reader.ReadString('\n')
 	if err != nil {
 		return Quit, err
 	}
 
-	input = strings.ToLower(strings.TrimSpace(input))
+	input = strings.TrimSpace(input)
 
 	switch input {
 	case "a", "accept":
@@ -136,6 +157,12 @@ func askChoice(reader *bufio.Reader, current, total int) (ReviewChoice, error) {
 		return Reject, nil
 	case "s", "skip":
 		return Skip, nil
+	case "A", "Accept All":
+		return AcceptAllChoice, nil
+	case "R", "Reject All":
+		return RejectAllChoice, nil
+	case "S", "Skip All":
+		return SkipAllChoice, nil
 	// case "d", "diff":
 	// return ToggleDiff, nil
 	case "q", "quit":

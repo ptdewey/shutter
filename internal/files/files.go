@@ -9,13 +9,13 @@ import (
 )
 
 type Snapshot struct {
-	Version  string
-	TestName string
-	Content  string
+	Version string
+	Name    string
+	Content string
 }
 
 func (s *Snapshot) Serialize() string {
-	header := fmt.Sprintf("---\nversion: %s\ntest_name: %s\n---\n", s.Version, s.TestName)
+	header := fmt.Sprintf("---\nversion: %s\ntest_name: %s\n---\n", s.Version, s.Name)
 	return header + s.Content
 }
 
@@ -48,7 +48,7 @@ func Deserialize(raw string) (*Snapshot, error) {
 		case "version":
 			snap.Version = value
 		case "test_name":
-			snap.TestName = value
+			snap.Name = value
 		}
 	}
 
@@ -110,7 +110,15 @@ func SaveSnapshot(snap *Snapshot, state string) error {
 		return err
 	}
 
-	fileName := SnapshotFileName(snap.TestName) + "." + state
+	var fileName string
+	switch state {
+	case "accepted":
+		fileName = SnapshotFileName(snap.Name) + ".snap"
+	case "new":
+		fileName = SnapshotFileName(snap.Name) + ".snap.new"
+	default:
+		fileName = SnapshotFileName(snap.Name) + "." + state
+	}
 	filePath := filepath.Join(snapshotDir, fileName)
 
 	return os.WriteFile(filePath, []byte(snap.Serialize()), 0644)
@@ -122,7 +130,15 @@ func ReadSnapshot(testName string, state string) (*Snapshot, error) {
 		return nil, err
 	}
 
-	fileName := SnapshotFileName(testName) + "." + state
+	var fileName string
+	switch state {
+	case "accepted":
+		fileName = SnapshotFileName(testName) + ".snap"
+	case "new":
+		fileName = SnapshotFileName(testName) + ".snap.new"
+	default:
+		fileName = SnapshotFileName(testName) + "." + state
+	}
 	filePath := filepath.Join(snapshotDir, fileName)
 
 	data, err := os.ReadFile(filePath)
@@ -134,7 +150,7 @@ func ReadSnapshot(testName string, state string) (*Snapshot, error) {
 }
 
 func ReadAccepted(testName string) (*Snapshot, error) {
-	return ReadSnapshot(testName, "accepted")
+	return ReadSnapshot(testName, "snap")
 }
 
 func ReadNew(testName string) (*Snapshot, error) {
@@ -154,8 +170,8 @@ func ListNewSnapshots() ([]string, error) {
 
 	var newSnapshots []string
 	for _, entry := range entries {
-		if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".new") {
-			name := strings.TrimSuffix(entry.Name(), ".new")
+		if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".snap.new") {
+			name := strings.TrimSuffix(entry.Name(), ".snap.new")
 			newSnapshots = append(newSnapshots, name)
 		}
 	}
@@ -170,8 +186,8 @@ func AcceptSnapshot(testName string) error {
 	}
 
 	fileName := SnapshotFileName(testName)
-	newPath := filepath.Join(snapshotDir, fileName+".new")
-	acceptedPath := filepath.Join(snapshotDir, fileName+".accepted")
+	newPath := filepath.Join(snapshotDir, fileName+".snap.new")
+	acceptedPath := filepath.Join(snapshotDir, fileName+".snap")
 
 	data, err := os.ReadFile(newPath)
 	if err != nil {
@@ -191,7 +207,7 @@ func RejectSnapshot(testName string) error {
 		return err
 	}
 
-	fileName := SnapshotFileName(testName) + ".new"
+	fileName := SnapshotFileName(testName) + ".snap.new"
 	filePath := filepath.Join(snapshotDir, fileName)
 
 	return os.Remove(filePath)
