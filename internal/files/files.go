@@ -1,4 +1,4 @@
-package freeze
+package files
 
 import (
 	"fmt"
@@ -7,6 +7,53 @@ import (
 	"regexp"
 	"strings"
 )
+
+type Snapshot struct {
+	Version  string
+	TestName string
+	Content  string
+}
+
+func (s *Snapshot) Serialize() string {
+	header := fmt.Sprintf("---\nversion: %s\ntest_name: %s\n---\n", s.Version, s.TestName)
+	return header + s.Content
+}
+
+func Deserialize(raw string) (*Snapshot, error) {
+	parts := strings.SplitN(raw, "---\n", 3)
+	if len(parts) < 3 {
+		return nil, fmt.Errorf("invalid snapshot format")
+	}
+
+	header := parts[1]
+	content := parts[2]
+
+	snap := &Snapshot{
+		Content: content,
+	}
+
+	for _, line := range strings.Split(header, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+
+		kv := strings.SplitN(line, ": ", 2)
+		if len(kv) != 2 {
+			continue
+		}
+
+		key, value := kv[0], kv[1]
+		switch key {
+		case "version":
+			snap.Version = value
+		case "test_name":
+			snap.TestName = value
+		}
+	}
+
+	return snap, nil
+}
 
 func findProjectRoot() (string, error) {
 	cwd, err := os.Getwd()
@@ -34,9 +81,6 @@ func getSnapshotDir() (string, error) {
 		return "", err
 	}
 
-	// TODO: pull this from config.
-	// config should allow having snapshot dir at project root (with or w/o subdirs)
-	// or in a __snapshots__ dir inside of each package dir
 	snapshotDir := filepath.Join(root, "__snapshots__")
 	if err := os.MkdirAll(snapshotDir, 0755); err != nil {
 		return "", err
@@ -89,11 +133,11 @@ func ReadSnapshot(testName string, state string) (*Snapshot, error) {
 	return Deserialize(string(data))
 }
 
-func readAccepted(testName string) (*Snapshot, error) {
+func ReadAccepted(testName string) (*Snapshot, error) {
 	return ReadSnapshot(testName, "accepted")
 }
 
-func readNew(testName string) (*Snapshot, error) {
+func ReadNew(testName string) (*Snapshot, error) {
 	return ReadSnapshot(testName, "new")
 }
 

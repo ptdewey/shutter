@@ -3,6 +3,10 @@ package freeze
 import (
 	"fmt"
 	"reflect"
+
+	"github.com/ptdewey/freeze/internal/diff"
+	"github.com/ptdewey/freeze/internal/files"
+	"github.com/ptdewey/freeze/internal/pretty"
 )
 
 const version = "0.1.0"
@@ -33,35 +37,48 @@ func snap(t testingT, content string) {
 func snapWithTitle(t testingT, title string, content string) {
 	t.Helper()
 
-	snapshot := &Snapshot{
+	snapshot := &files.Snapshot{
 		Version:  version,
 		TestName: title,
 		Content:  content,
 	}
 
-	accepted, err := readAccepted(title)
+	accepted, err := files.ReadAccepted(title)
 	if err == nil {
 		if accepted.Content == content {
 			return
 		}
 
-		if err := SaveSnapshot(snapshot, "new"); err != nil {
+		if err := files.SaveSnapshot(snapshot, "new"); err != nil {
 			t.Error("failed to save snapshot:", err)
 			return
 		}
 
-		fmt.Println(DiffSnapshotBox(accepted, snapshot))
+		diffLines := convertDiffLines(diff.Histogram(accepted.Content, snapshot.Content))
+		fmt.Println(pretty.DiffSnapshotBox(accepted, snapshot, diffLines))
 		t.Error("snapshot mismatch - run 'freeze review' to update")
 		return
 	}
 
-	if err := SaveSnapshot(snapshot, "new"); err != nil {
+	if err := files.SaveSnapshot(snapshot, "new"); err != nil {
 		t.Error("failed to save snapshot:", err)
 		return
 	}
 
-	fmt.Println(NewSnapshotBox(snapshot))
+	fmt.Println(pretty.NewSnapshotBox(snapshot))
 	t.Error("new snapshot created - run 'freeze review' to accept")
+}
+
+func convertDiffLines(diffLines []diff.DiffLine) []pretty.DiffLine {
+	result := make([]pretty.DiffLine, len(diffLines))
+	for i, dl := range diffLines {
+		result[i] = pretty.DiffLine{
+			Number: dl.Number,
+			Line:   dl.Line,
+			Kind:   pretty.DiffKind(dl.Kind),
+		}
+	}
+	return result
 }
 
 func formatValues(values ...any) string {
@@ -102,7 +119,7 @@ func formatValue(v any) string {
 	case reflect.String:
 		return v.(string)
 	case reflect.Struct, reflect.Slice, reflect.Array, reflect.Map:
-		// TODO: make this better probably
+		// TODO: make this better probably (utter?)
 		return fmt.Sprintf("%#v", v)
 	default:
 		return fmt.Sprint(v)

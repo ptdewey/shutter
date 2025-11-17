@@ -1,4 +1,4 @@
-package freeze
+package diff
 
 import (
 	"strings"

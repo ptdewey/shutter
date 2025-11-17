@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/ptdewey/freeze/internal/diff"
+	"github.com/ptdewey/freeze/internal/files"
+	"github.com/ptdewey/freeze/internal/pretty"
 )
 
 type ReviewChoice int
@@ -13,22 +17,35 @@ const (
 	Accept ReviewChoice = iota
 	Reject
 	Skip
-	ToggleDiff
+	// ToggleDiff
 	Quit
 )
 
+func computeDiffLines(old, new *files.Snapshot) []pretty.DiffLine {
+	diffLines := diff.Histogram(old.Content, new.Content)
+	result := make([]pretty.DiffLine, len(diffLines))
+	for i, dl := range diffLines {
+		result[i] = pretty.DiffLine{
+			Number: dl.Number,
+			Line:   dl.Line,
+			Kind:   pretty.DiffKind(dl.Kind),
+		}
+	}
+	return result
+}
+
 func Review() error {
-	snapshots, err := ListNewSnapshots()
+	snapshots, err := files.ListNewSnapshots()
 	if err != nil {
 		return err
 	}
 
 	if len(snapshots) == 0 {
-		fmt.Println(FormatSuccess("✓ No new snapshots to review"))
+		fmt.Println(pretty.Success("✓ No new snapshots to review"))
 		return nil
 	}
 
-	fmt.Println(FormatHeader("🐦 Freeze - Snapshot Review"))
+	fmt.Println(pretty.Header("🐦 Freeze - Snapshot Review"))
 	fmt.Printf("Found %d new snapshot(s) to review\n\n", len(snapshots))
 
 	return reviewLoop(snapshots)
@@ -39,22 +56,24 @@ func reviewLoop(snapshots []string) error {
 	showDiff := false
 
 	for i, testName := range snapshots {
-		fmt.Printf("\n[%d/%d] %s\n", i+1, len(snapshots), FormatHeader(testName))
+		fmt.Printf("\n[%d/%d] %s\n", i+1, len(snapshots), pretty.Header(testName))
 
-		newSnap, err := ReadSnapshot(testName, "new")
+		newSnap, err := files.ReadSnapshot(testName, "new")
 		if err != nil {
-			fmt.Println(FormatError("✗ Failed to read new snapshot: " + err.Error()))
+			fmt.Println(pretty.Error("✗ Failed to read new snapshot: " + err.Error()))
 			continue
 		}
 
-		accepted, acceptErr := ReadSnapshot(testName, "accepted")
+		accepted, acceptErr := files.ReadSnapshot(testName, "accepted")
 
 		if acceptErr == nil && showDiff {
-			fmt.Println(DiffSnapshotBox(accepted, newSnap))
+			diffLines := computeDiffLines(accepted, newSnap)
+			fmt.Println(pretty.DiffSnapshotBox(accepted, newSnap, diffLines))
 		} else if acceptErr == nil {
-			fmt.Println(DiffSnapshotBox(accepted, newSnap))
+			diffLines := computeDiffLines(accepted, newSnap)
+			fmt.Println(pretty.DiffSnapshotBox(accepted, newSnap, diffLines))
 		} else {
-			fmt.Println(NewSnapshotBox(newSnap))
+			fmt.Println(pretty.NewSnapshotBox(newSnap))
 		}
 
 		for {
@@ -65,30 +84,28 @@ func reviewLoop(snapshots []string) error {
 
 			switch choice {
 			case Accept:
-				if err := AcceptSnapshot(testName); err != nil {
-					fmt.Println(FormatError("✗ Failed to accept snapshot: " + err.Error()))
+				if err := files.AcceptSnapshot(testName); err != nil {
+					fmt.Println(pretty.Error("✗ Failed to accept snapshot: " + err.Error()))
 				} else {
-					fmt.Println(FormatSuccess("✓ Snapshot accepted"))
+					fmt.Println(pretty.Success("✓ Snapshot accepted"))
 				}
-				break
 			case Reject:
-				if err := RejectSnapshot(testName); err != nil {
-					fmt.Println(FormatError("✗ Failed to reject snapshot: " + err.Error()))
+				if err := files.RejectSnapshot(testName); err != nil {
+					fmt.Println(pretty.Error("✗ Failed to reject snapshot: " + err.Error()))
 				} else {
-					fmt.Println(FormatWarning("⊘ Snapshot rejected"))
+					fmt.Println(pretty.Warning("⊘ Snapshot rejected"))
 				}
-				break
 			case Skip:
-				fmt.Println(FormatWarning("⊘ Snapshot skipped"))
-				break
-			case ToggleDiff:
-				showDiff = !showDiff
-				if acceptErr == nil {
-					fmt.Println(DiffSnapshotBox(accepted, newSnap))
-				} else {
-					fmt.Println(NewSnapshotBox(newSnap))
-				}
-				continue
+				fmt.Println(pretty.Warning("⊘ Snapshot skipped"))
+			// case ToggleDiff:
+			// 	showDiff = !showDiff
+			// 	if acceptErr == nil {
+			// 		diffLines := computeDiffLines(accepted, newSnap)
+			// 		fmt.Println(pretty.DiffSnapshotBox(accepted, newSnap, diffLines))
+			// 	} else {
+			// 		fmt.Println(pretty.NewSnapshotBox(newSnap))
+			// 	}
+			// continue
 			case Quit:
 				fmt.Println("\nReview interrupted")
 				return nil
@@ -97,12 +114,13 @@ func reviewLoop(snapshots []string) error {
 		}
 	}
 
-	fmt.Println("\n" + FormatSuccess("✓ Review complete"))
+	fmt.Println("\n" + pretty.Success("✓ Review complete"))
 	return nil
 }
 
 func askChoice(reader *bufio.Reader, current, total int) (ReviewChoice, error) {
-	fmt.Printf("\nOptions: [a]ccept [r]eject [s]kip [d]iff [q]uit: ")
+	// fmt.Printf("\nOptions: [a]ccept [r]eject [s]kip [d]iff [q]uit: ")
+	fmt.Printf("\nOptions: [a]ccept [r]eject [s]kip [q]uit: ")
 
 	input, err := reader.ReadString('\n')
 	if err != nil {
@@ -118,44 +136,44 @@ func askChoice(reader *bufio.Reader, current, total int) (ReviewChoice, error) {
 		return Reject, nil
 	case "s", "skip":
 		return Skip, nil
-	case "d", "diff":
-		return ToggleDiff, nil
+	// case "d", "diff":
+	// return ToggleDiff, nil
 	case "q", "quit":
 		return Quit, nil
 	default:
-		fmt.Println(FormatWarning("Invalid option, please try again"))
+		fmt.Println(pretty.Warning("Invalid option, please try again"))
 		return askChoice(reader, current, total)
 	}
 }
 
 func AcceptAll() error {
-	snapshots, err := ListNewSnapshots()
+	snapshots, err := files.ListNewSnapshots()
 	if err != nil {
 		return err
 	}
 
 	for _, testName := range snapshots {
-		if err := AcceptSnapshot(testName); err != nil {
+		if err := files.AcceptSnapshot(testName); err != nil {
 			return err
 		}
 	}
 
-	fmt.Printf(FormatSuccess("✓ Accepted %d snapshot(s)\n"), len(snapshots))
+	fmt.Printf(pretty.Success("✓ Accepted %d snapshot(s)\n"), len(snapshots))
 	return nil
 }
 
 func RejectAll() error {
-	snapshots, err := ListNewSnapshots()
+	snapshots, err := files.ListNewSnapshots()
 	if err != nil {
 		return err
 	}
 
 	for _, testName := range snapshots {
-		if err := RejectSnapshot(testName); err != nil {
+		if err := files.RejectSnapshot(testName); err != nil {
 			return err
 		}
 	}
 
-	fmt.Printf(FormatWarning("⊘ Rejected %d snapshot(s)\n"), len(snapshots))
+	fmt.Printf(pretty.Warning("⊘ Rejected %d snapshot(s)\n"), len(snapshots))
 	return nil
 }

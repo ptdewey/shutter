@@ -1,91 +1,34 @@
-package freeze
+package pretty
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
+
+	"github.com/ptdewey/freeze/internal/files"
 )
+
+type DiffLine struct {
+	Number int
+	Line   string
+	Kind   DiffKind
+}
+
+type DiffKind int
 
 const (
-	colorRed    = "\033[31m"
-	colorGreen  = "\033[32m"
-	colorYellow = "\033[33m"
-	colorBlue   = "\033[34m"
-	colorGray   = "\033[90m"
-	colorReset  = "\033[0m"
-	colorBold   = "\033[1m"
+	DiffShared DiffKind = iota
+	DiffOld
+	DiffNew
 )
 
-func TerminalWidth() int {
-	width := os.Getenv("COLUMNS")
-	if w, err := strconv.Atoi(width); err == nil && w > 0 {
-		return w
-	}
-	return 80
-}
-
-func ClearScreen() {
-	fmt.Print("\033[2J")
-	fmt.Print("\033[H")
-}
-
-func ClearLine() {
-	fmt.Print("\033[K")
-}
-
-func Red(s string) string {
-	if !hasColor() {
-		return s
-	}
-	return colorRed + s + colorReset
-}
-
-func Green(s string) string {
-	if !hasColor() {
-		return s
-	}
-	return colorGreen + s + colorReset
-}
-
-func Yellow(s string) string {
-	if !hasColor() {
-		return s
-	}
-	return colorYellow + s + colorReset
-}
-
-func Blue(s string) string {
-	if !hasColor() {
-		return s
-	}
-	return colorBlue + s + colorReset
-}
-
-func Gray(s string) string {
-	if !hasColor() {
-		return s
-	}
-	return colorGray + s + colorReset
-}
-
-func Bold(s string) string {
-	if !hasColor() {
-		return s
-	}
-	return colorBold + s + colorReset
-}
-
-func hasColor() bool {
-	return os.Getenv("NO_COLOR") == ""
-}
-
-func NewSnapshotBox(snap *Snapshot) string {
+func NewSnapshotBox(snap *files.Snapshot) string {
 	width := TerminalWidth()
 
 	var sb strings.Builder
 	sb.WriteString(strings.Repeat("─", width+2) + "\n")
-	// TODO: add file path to a new line below this
+	// TODO: "New Snapshot" should be above this line, in default color.
+	// - color should be on test name and path
 	sb.WriteString(fmt.Sprintf("  %s \n", Blue("New Snapshot -- \""+snap.TestName+"\"")))
 
 	lines := strings.Split(snap.Content, "\n")
@@ -113,11 +56,11 @@ func NewSnapshotBox(snap *Snapshot) string {
 	return sb.String()
 }
 
-// TODO: this probably needs the styling overhaul from above
-func DiffSnapshotBox(old, new *Snapshot) string {
+// TODO: needs to get overhauled with styling like above
+// - should show line numbers, line numbers with diffs should be the same
+// - should show test name and path in the header section
+func DiffSnapshotBox(old, new *files.Snapshot, diffLines []DiffLine) string {
 	width := TerminalWidth()
-
-	diffLines := Histogram(old.Content, new.Content)
 
 	var sb strings.Builder
 	sb.WriteString(strings.Repeat("─", width) + "\n")
@@ -149,20 +92,4 @@ func DiffSnapshotBox(old, new *Snapshot) string {
 
 	sb.WriteString(strings.Repeat("─", width) + "\n")
 	return sb.String()
-}
-
-func FormatHeader(text string) string {
-	return Bold(Blue(text))
-}
-
-func FormatSuccess(text string) string {
-	return Green(text)
-}
-
-func FormatError(text string) string {
-	return Red(text)
-}
-
-func FormatWarning(text string) string {
-	return Yellow(text)
 }

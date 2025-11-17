@@ -14,7 +14,7 @@ func TestSnapString(t *testing.T) {
 }
 
 func TestSnapMultiple(t *testing.T) {
-	freeze.Snap(t, "value1", "value2", 42, "foo", "bar", "baz", "wibble", "wobble", "tick")
+	freeze.Snap(t, "value1", "value2", 42, "foo", "bar", "baz", "wibble", "wobble", "tock")
 }
 
 type CustomStruct struct {
