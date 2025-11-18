@@ -3,5 +3,5 @@ version: 0.1.0
 test_name: TestMap
 ---
 map[string]interface{}{
- string("foo"): string("bar"),
+ "foo": "bar",
 }

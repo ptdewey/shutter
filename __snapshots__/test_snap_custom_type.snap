@@ -3,6 +3,6 @@ version: 0.1.0
 test_name: TestSnapCustomType
 ---
 freeze_test.CustomStruct{
- Name: string("Alice"),
- Age: int(30),
+ Name: "Alice",
+ Age: 30,
 }

@@ -1,82 +1,79 @@
 package freeze
 
 import (
-	"github.com/ptdewey/freeze/internal/diff"
-	"github.com/ptdewey/freeze/internal/files"
-	"github.com/ptdewey/freeze/internal/pretty"
+	"github.com/ptdewey/freeze/internal/api"
 )
 
-type Snapshot = files.Snapshot
+type Snapshot = api.Snapshot
 
-type DiffLine = diff.DiffLine
+type DiffLine = api.DiffLine
 
 const (
-	DiffShared = diff.DiffShared
-	DiffOld    = diff.DiffOld
-	DiffNew    = diff.DiffNew
+	DiffShared = api.DiffShared
+	DiffOld    = api.DiffOld
+	DiffNew    = api.DiffNew
 )
 
 func Deserialize(raw string) (*Snapshot, error) {
-	return files.Deserialize(raw)
+	return api.Deserialize(raw)
 }
 
 func SaveSnapshot(snap *Snapshot, state string) error {
-	return files.SaveSnapshot(snap, state)
+	return api.SaveSnapshot(snap, state)
 }
 
 func ReadSnapshot(testName string, state string) (*Snapshot, error) {
-	return files.ReadSnapshot(testName, state)
+	return api.ReadSnapshot(testName, state)
 }
 
 func SnapshotFileName(testName string) string {
-	return files.SnapshotFileName(testName)
+	return api.SnapshotFileName(testName)
 }
 
 func Histogram(old, new string) []DiffLine {
-	return diff.Histogram(old, new)
+	return api.Histogram(old, new)
 }
 
 func NewSnapshotBox(snap *Snapshot) string {
-	return pretty.NewSnapshotBox(snap)
+	return api.NewSnapshotBox(snap)
 }
 
 func DiffSnapshotBox(old, new *Snapshot) string {
-	diffLines := convertDiffLines(diff.Histogram(old.Content, new.Content))
-	return pretty.DiffSnapshotBox(old, new, diffLines)
+	return api.DiffSnapshotBox(old, new)
 }
 
 func Red(s string) string {
-	return pretty.Red(s)
+	return api.Red(s)
 }
 
 func Green(s string) string {
-	return pretty.Green(s)
+	return api.Green(s)
 }
 
 func Yellow(s string) string {
-	return pretty.Yellow(s)
+	return api.Yellow(s)
 }
 
 func Blue(s string) string {
-	return pretty.Blue(s)
+	return api.Blue(s)
 }
 
 func Gray(s string) string {
-	return pretty.Gray(s)
+	return api.Gray(s)
 }
 
 func Bold(s string) string {
-	return pretty.Bold(s)
+	return api.Bold(s)
 }
 
 func TerminalWidth() int {
-	return pretty.TerminalWidth()
+	return api.TerminalWidth()
 }
 
 func ClearScreen() {
-	pretty.ClearScreen()
+	api.ClearScreen()
 }
 
 func ClearLine() {
-	pretty.ClearLine()
+	api.ClearLine()
 }
