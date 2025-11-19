@@ -1,0 +1,35 @@
+---
+title: JSON Array of Objects
+test_name: TestJSONArrayOfObjects
+file_path: 
+func_name: 
+version: 0.1.0
+---
+[]interface{}{
+ map[string]interface{}{
+  "type": "user",
+  "id": 1.0,
+  "data": map[string]interface{}{
+   "role": "admin",
+   "name": "Alice",
+  },
+ },
+ map[string]interface{}{
+  "type": "post",
+  "id": 100.0,
+  "data": map[string]interface{}{
+   "likes": 42.0,
+   "title": "First Post",
+   "author_id": 1.0,
+  },
+ },
+ map[string]interface{}{
+  "type": "comment",
+  "id": 500.0,
+  "data": map[string]interface{}{
+   "post_id": 100.0,
+   "content": "Great post!",
+   "author_id": 2.0,
+  },
+ },
+}

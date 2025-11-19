@@ -1,0 +1,17 @@
+---
+title: JSON with Special Characters
+test_name: TestJSONWithSpecialCharacters
+file_path: 
+func_name: 
+version: 0.1.0
+---
+map[string]interface{}{
+ "tabs": "col1\tcol2\tcol3",
+ "backslash": "path\\to\\file",
+ "english": "Hello, World!",
+ "unicode": "こんにちは 世界 🌍",
+ "emoji": "😀 😃 😄 😁 😆",
+ "special_chars": "!@#$%^&*()_+-=[]{}|;:,.<>?",
+ "escaped": "quotes: \"double\" and 'single'",
+ "newlines": "line1\nline2\rline3\r\nline4",
+}

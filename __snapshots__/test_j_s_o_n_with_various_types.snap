@@ -1,0 +1,31 @@
+---
+title: JSON with Various Types
+test_name: TestJSONWithVariousTypes
+file_path: 
+func_name: 
+version: 0.1.0
+---
+map[string]interface{}{
+ "float": 3.14159,
+ "boolean_true": true,
+ "null_value": nil,
+ "array": []interface{}{
+  1.0,
+  2.0,
+  3.0,
+  "four",
+  5.5,
+ },
+ "empty_array": []interface{}{
+ },
+ "empty_object": map[string]interface{}{
+ },
+ "escaped_string": "line1\nline2\ttab",
+ "string": "hello world",
+ "integer": 42.0,
+ "boolean_false": false,
+ "object": map[string]interface{}{
+  "nested": "value",
+  "count": 10.0,
+ },
+}

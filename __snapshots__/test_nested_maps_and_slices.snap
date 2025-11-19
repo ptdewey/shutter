@@ -1,0 +1,52 @@
+---
+title: Nested Maps and Slices
+test_name: TestNestedMapsAndSlices
+file_path: 
+func_name: 
+version: 0.1.0
+---
+map[string]interface{}{
+ "users": map[string]interface{}{
+  "active": []map[string]interface{}{
+   {
+    "id": 1,
+    "name": "Alice",
+    "verified": true,
+   },
+   {
+    "id": 2,
+    "name": "Bob",
+    "verified": false,
+   },
+  },
+  "inactive": []map[string]interface{}{
+   {
+    "id": 3,
+    "name": "Charlie",
+   },
+  },
+ },
+ "posts": map[string]interface{}{
+  "published": 42,
+  "drafts": 5,
+  "categories": []string{
+   "tech",
+   "lifestyle",
+   "news",
+  },
+ },
+ "stats": map[string]interface{}{
+  "daily": map[string]interface{}{
+   "views": 1500,
+   "clicks": 320,
+   "conversions": map[string]interface{}{
+    "total": 45,
+    "by_source": map[string]int{
+     "paid": 15,
+     "referral": 5,
+     "organic": 25,
+    },
+   },
+  },
+ },
+}

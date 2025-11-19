@@ -1,0 +1,85 @@
+---
+title: Complex JSON Structure
+test_name: TestComplexJSONStructure
+file_path: 
+func_name: 
+version: 0.1.0
+---
+map[string]interface{}{
+ "api": map[string]interface{}{
+  "version": "2.0",
+  "endpoints": []interface{}{
+   map[string]interface{}{
+    "rate_limit": map[string]interface{}{
+     "requests": 100.0,
+     "window": "1m",
+    },
+    "responses": map[string]interface{}{
+     "200": map[string]interface{}{
+      "description": "Success",
+      "schema": map[string]interface{}{
+       "type": "array",
+       "items": map[string]interface{}{
+        "type": "object",
+        "properties": map[string]interface{}{
+         "id": map[string]interface{}{
+          "type": "integer",
+         },
+         "name": map[string]interface{}{
+          "type": "string",
+         },
+        },
+       },
+      },
+     },
+     "401": map[string]interface{}{
+      "description": "Unauthorized",
+     },
+    },
+    "path": "/users",
+    "method": "GET",
+    "auth_required": true,
+   },
+   map[string]interface{}{
+    "auth_required": true,
+    "rate_limit": map[string]interface{}{
+     "requests": 50.0,
+     "window": "1m",
+    },
+    "path": "/users/{id}",
+    "method": "POST",
+   },
+  },
+  "models": map[string]interface{}{
+   "User": map[string]interface{}{
+    "properties": map[string]interface{}{
+     "created_at": map[string]interface{}{
+      "type": "string",
+      "format": "date-time",
+     },
+     "roles": map[string]interface{}{
+      "type": "array",
+      "items": map[string]interface{}{
+       "type": "string",
+      },
+     },
+     "id": map[string]interface{}{
+      "type": "integer",
+     },
+     "username": map[string]interface{}{
+      "type": "string",
+     },
+     "email": map[string]interface{}{
+      "type": "string",
+      "format": "email",
+     },
+    },
+    "required": []interface{}{
+     "id",
+     "username",
+     "email",
+    },
+   },
+  },
+ },
+}
