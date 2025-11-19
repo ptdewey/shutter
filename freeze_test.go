@@ -42,22 +42,6 @@ func TestMap(t *testing.T) {
 	})
 }
 
-func testHelperFunction() string {
-	return "helper result"
-}
-
-func TestSnapFunc(t *testing.T) {
-	freeze.SnapFunc(t, testHelperFunction())
-}
-
-func TestSnapFuncAnotherHelper(t *testing.T) {
-	freeze.SnapFunc(t, calculateSomething(5))
-}
-
-func calculateSomething(n int) int {
-	return n * 2
-}
-
 func TestSerializeDeserialize(t *testing.T) {
 	snap := &freeze.Snapshot{
 		Title:   "My Test Title",

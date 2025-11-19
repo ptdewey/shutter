@@ -2,7 +2,6 @@ package freeze
 
 import (
 	"fmt"
-	"runtime"
 
 	"github.com/kortschak/utter"
 	"github.com/ptdewey/freeze/internal/diff"
@@ -27,27 +26,6 @@ func Snap(t testingT, title string, values ...any) {
 	t.Helper()
 	content := formatValues(values...)
 	snap(t, title, content)
-}
-
-func SnapFunc(t testingT, values ...any) {
-	t.Helper()
-	pc, _, _, _ := runtime.Caller(1)
-	fn := runtime.FuncForPC(pc)
-	funcName := "unknown"
-	if fn != nil {
-		fullName := fn.Name()
-		parts := len(fullName) - 1
-		for i := len(fullName) - 1; i >= 0; i-- {
-			if fullName[i] == '.' {
-				parts = i + 1
-				break
-			}
-		}
-		funcName = fullName[parts:]
-	}
-	testName := t.Name()
-	content := formatValues(values...)
-	snapWithTitle(t, funcName, testName, content)
 }
 
 func snap(t testingT, title string, content string) {

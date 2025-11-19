@@ -4,7 +4,7 @@ A [birdie](https://github.com/giacomocavalieri/birdie) and [insta](https://githu
 
 ![New snapshot screen](./assets/screenshot-new.png "New snapshot view")
 
-![Snapshot review CLI](./assets/screenshots-diff-cli.png "Snapshot diff view (CLI)")
+![Snapshot review CLI](./assets/screenshot-diff-cli.png "Snapshot diff view (CLI)")
 
 ## Installation
 
@@ -15,14 +15,11 @@ go get github.com/ptdewey/freeze
 ## Usage
 
 ```go
-package yourpackage_test
+package package_test
 
 func TestSomething(t *testing.T) {
     result := SomeFunction("foo")
     freeze.Snap(t, result)
-
-    // To capture the calling function name use SnapFunc
-    freeze.SnapFunc(t, SomeFunction("bar"))
 }
 ```
 
@@ -32,9 +29,28 @@ To review a set of snapshots, run:
 go run github.com/ptdewey/freeze/cmd/freeze review
 ```
 
-<!-- TODO: add example of `freeze.Review()` in go code -->
+Freeze can also be used programmatically:
 
-Freeze also includes (in a separate Go module) a [Bubbletea](https://github.com/charmbracelet/bubbletea) TUI in [cmd/tui/main.go](./cmd/tui/main.go). (The TUI is shipped in a separate module to make the added dependencies optional)
+```go
+// Example: tools/freeze/main.go
+package main
+
+import "github.com/ptdewey/freeze"
+
+func main() {
+    // This will start the CLI review tool
+    freeze.Review()
+}
+```
+
+Which can then be run with:
+
+```sh
+go run tools/freeze/main.go
+```
+
+Freeze also includes (in a separate Go module) a [Bubbletea](https://github.com/charmbracelet/bubbletea) TUI in [cmd/tui/main.go](./cmd/tui/main.go).
+(The TUI is shipped in a separate module to make the added dependencies optional)
 
 ### TUI Usage
 
