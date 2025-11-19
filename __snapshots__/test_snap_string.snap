@@ -1,7 +1,8 @@
 ---
 title: Simple String Test
 test_name: TestSnapString
-file_path: /home/patrick/projects/freeze/freeze.go
+file_path: 
 func_name: 
+version: 0.1.0
 ---
 hello world

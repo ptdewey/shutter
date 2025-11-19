@@ -11,6 +11,8 @@ import (
 	"github.com/ptdewey/freeze/internal/review"
 )
 
+const version = "0.1.0"
+
 // TODO: probably make this (and other things) configurable
 func init() {
 	utter.Config.ElideType = true
@@ -57,13 +59,11 @@ func snap(t testingT, title string, content string) {
 func snapWithTitle(t testingT, title string, testName string, content string) {
 	t.Helper()
 
-	_, filePath, _, _ := runtime.Caller(2)
-
 	snapshot := &files.Snapshot{
-		Title:    title,
-		Name:     testName,
-		FilePath: filePath,
-		Content:  content,
+		Title:   title,
+		Name:    testName,
+		Content: content,
+		Version: version,
 	}
 
 	accepted, err := files.ReadAccepted(testName)

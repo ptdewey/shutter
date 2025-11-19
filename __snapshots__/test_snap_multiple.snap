@@ -1,8 +1,9 @@
 ---
 title: Multiple Values Test
 test_name: TestSnapMultiple
-file_path: /home/patrick/projects/freeze/freeze.go
+file_path: 
 func_name: 
+version: 0.1.0
 ---
 "value1"
 "value2"

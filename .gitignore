@@ -9,8 +9,3 @@ go.work
 go.work.sum
 .env
 cmd/tui/freeze-tui
-cmd/tui/tui
-cmd/freeze/freeze
-freeze-tui
-tui
-freeze

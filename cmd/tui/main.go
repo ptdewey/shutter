@@ -35,6 +35,25 @@ var (
 
 	contentStyle = lipgloss.NewStyle().
 			Padding(1, 2)
+
+	// Action styles with semantic colors
+	acceptStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("10")). // Green
+			Bold(true)
+
+	rejectStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("9")). // Red
+			Bold(true)
+
+	skipStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("11")). // Yellow
+			Bold(true)
+
+	keyStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("241"))
+
+	helpTextStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("240"))
 )
 
 type model struct {
@@ -135,7 +154,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.height = msg.Height
 
 		headerHeight := 3
-		footerHeight := 2
+		footerHeight := 1
 		verticalMarginHeight := headerHeight + footerHeight
 
 		if !m.ready {
@@ -161,10 +180,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if err := files.AcceptSnapshot(testName); err != nil {
 				m.err = err
 			} else {
-				m.actionResult = "Snapshot accepted"
+				m.acceptedAll++
 				m.current++
 				if err := m.loadCurrentSnapshot(); err != nil {
 					m.err = err
+				}
+				if m.done {
+					return m, tea.Quit
 				}
 				m.updateViewportContent()
 			}
@@ -175,20 +197,26 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if err := files.RejectSnapshot(testName); err != nil {
 				m.err = err
 			} else {
-				m.actionResult = "Snapshot rejected"
+				m.rejectedAll++
 				m.current++
 				if err := m.loadCurrentSnapshot(); err != nil {
 					m.err = err
+				}
+				if m.done {
+					return m, tea.Quit
 				}
 				m.updateViewportContent()
 			}
 
 		case "s":
 			// Skip current snapshot
-			m.actionResult = "Snapshot skipped"
+			m.skippedAll++
 			m.current++
 			if err := m.loadCurrentSnapshot(); err != nil {
 				m.err = err
+			}
+			if m.done {
+				return m, tea.Quit
 			}
 			m.updateViewportContent()
 
@@ -251,10 +279,30 @@ func (m *model) updateViewportContent() {
 		}
 	}
 
-	if m.actionResult != "" {
-		b.WriteString("\n\n")
-		b.WriteString(pretty.Success("✓ " + m.actionResult))
-	}
+	// Add action options below the snapshot/diff box
+	b.WriteString("\n")
+	acceptLine := lipgloss.JoinHorizontal(lipgloss.Left,
+		keyStyle.Render("[a]"),
+		helpTextStyle.Render(" "),
+		acceptStyle.Render("accept"),
+	)
+	b.WriteString(acceptLine)
+	b.WriteString("\n")
+
+	rejectLine := lipgloss.JoinHorizontal(lipgloss.Left,
+		keyStyle.Render("[r]"),
+		helpTextStyle.Render(" "),
+		rejectStyle.Render("reject"),
+	)
+	b.WriteString(rejectLine)
+	b.WriteString("\n")
+
+	skipLine := lipgloss.JoinHorizontal(lipgloss.Left,
+		keyStyle.Render("[s]"),
+		helpTextStyle.Render(" "),
+		skipStyle.Render("skip"),
+	)
+	b.WriteString(skipLine)
 
 	m.viewport.SetContent(contentStyle.Render(b.String()))
 	m.viewport.GotoTop()
@@ -266,14 +314,20 @@ func (m model) View() string {
 			return pretty.Success("✓ No new snapshots to review\n")
 		}
 
+		// Build summary from counts
+		var summary []string
 		if m.acceptedAll > 0 {
-			return pretty.Success(fmt.Sprintf("✓ Accepted %d snapshot(s)\n", m.acceptedAll))
+			summary = append(summary, fmt.Sprintf("✓ Accepted %d", m.acceptedAll))
 		}
 		if m.rejectedAll > 0 {
-			return pretty.Warning(fmt.Sprintf("⊘ Rejected %d snapshot(s)\n", m.rejectedAll))
+			summary = append(summary, fmt.Sprintf("⊘ Rejected %d", m.rejectedAll))
 		}
 		if m.skippedAll > 0 {
-			return pretty.Warning(fmt.Sprintf("⊘ Skipped %d snapshot(s)\n", m.skippedAll))
+			summary = append(summary, fmt.Sprintf("⊘ Skipped %d", m.skippedAll))
+		}
+
+		if len(summary) > 0 {
+			return pretty.Success(strings.Join(summary, " • ") + "\n")
 		}
 		return pretty.Success("\n✓ Review complete\n")
 	}
@@ -289,33 +343,44 @@ func (m model) View() string {
 	// Header
 	header := lipgloss.JoinHorizontal(
 		lipgloss.Left,
-		titleStyle.Render("Review Snapshots"),
+		titleStyle.Render("Review Snapshots "),
 		counterStyle.Render(fmt.Sprintf("[%d/%d] %s", m.current+1, len(m.snapshots), m.snapshots[m.current])),
 	)
+	headerStyled := statusBarStyle.Width(m.width).Render(header)
 
-	// Footer with help
+	// Footer with scroll info only
 	scrollInfo := fmt.Sprintf("%3.f%%", m.viewport.ScrollPercent()*100)
-	helpText := "↑/↓/scroll: navigate • [a]ccept • [r]eject • [s]kip • [A]ll Accept • [R]ll Reject • [q]uit"
+	scrollStyled := helpStyle.Render(scrollInfo)
 
-	footerLeft := helpStyle.Render(helpText)
-	footerRight := helpStyle.Render(scrollInfo)
-
-	gap := max(m.width-lipgloss.Width(footerLeft)-lipgloss.Width(footerRight), 0)
-
-	footer := lipgloss.JoinHorizontal(
-		lipgloss.Left,
-		footerLeft,
-		strings.Repeat(" ", gap),
-		footerRight,
+	// Create footer with just scroll info on the right
+	footer := lipgloss.JoinHorizontal(lipgloss.Left,
+		strings.Repeat(" ", max(m.width-lipgloss.Width(scrollStyled)-1, 0)),
+		scrollStyled,
 	)
+	footerStyled := statusBarStyle.Width(m.width).Render(footer)
 
-	// Main content with viewport
+	// Viewport content
+	viewportContent := m.viewport.View()
+
+	// Calculate how much vertical space we have
+	// Total height = terminal height
+	// Used by header = ~1 line (the rendered header)
+	// Used by footer = ~1 line
+	// Middle = viewport (takes remaining space)
+
 	return lipgloss.JoinVertical(
 		lipgloss.Left,
-		statusBarStyle.Width(m.width).Render(header),
-		m.viewport.View(),
-		statusBarStyle.Width(m.width).Render(footer),
+		headerStyled,
+		viewportContent,
+		footerStyled,
 	)
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
 
 func main() {

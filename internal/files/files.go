@@ -13,11 +13,12 @@ type Snapshot struct {
 	Name     string
 	FilePath string
 	FuncName string
+	Version  string
 	Content  string
 }
 
 func (s *Snapshot) Serialize() string {
-	header := fmt.Sprintf("---\ntitle: %s\ntest_name: %s\nfile_path: %s\nfunc_name: %s\n---\n", s.Title, s.Name, s.FilePath, s.FuncName)
+	header := fmt.Sprintf("---\ntitle: %s\ntest_name: %s\nfile_path: %s\nfunc_name: %s\nversion: %s\n---\n", s.Title, s.Name, s.FilePath, s.FuncName, s.Version)
 	return header + s.Content
 }
 
@@ -55,6 +56,8 @@ func Deserialize(raw string) (*Snapshot, error) {
 			snap.FilePath = value
 		case "func_name":
 			snap.FuncName = value
+		case "version":
+			snap.Version = value
 		}
 	}
 

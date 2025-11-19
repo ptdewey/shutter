@@ -34,10 +34,7 @@ func newSnapshotBoxInternal(snap *files.Snapshot, isFuncSnapshot bool) string {
 	if snap.Title != "" {
 		sb.WriteString(fmt.Sprintf("  title: %s\n", Blue("\""+snap.Title+"\"")))
 	}
-	if isFuncSnapshot && snap.FuncName != "" {
-		sb.WriteString(fmt.Sprintf("  func: %s\n", Blue("\""+snap.FuncName+"\"")))
-		sb.WriteString(fmt.Sprintf("  test: %s\n", Blue("\""+snap.Name+"\"")))
-	} else {
+	if snap.Name != "" {
 		sb.WriteString(fmt.Sprintf("  test: %s\n", Blue("\""+snap.Name+"\"")))
 	}
 	sb.WriteString("\n")

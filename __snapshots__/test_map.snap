@@ -1,8 +1,9 @@
 ---
 title: Map Test
 test_name: TestMap
-file_path: /home/patrick/projects/freeze/freeze.go
+file_path: 
 func_name: 
+version: 0.1.0
 ---
 map[string]interface{}{
  "foo": "bar",

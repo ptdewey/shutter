@@ -66,7 +66,7 @@ func TestSerializeDeserialize(t *testing.T) {
 	}
 
 	serialized := snap.Serialize()
-	expected := "---\ntitle: My Test Title\ntest_name: TestExample\nfile_path: \nfunc_name: \n---\ntest content\nmultiline"
+	expected := "---\ntitle: My Test Title\ntest_name: TestExample\nfile_path: \nfunc_name: \nversion: \n---\ntest content\nmultiline"
 	if serialized != expected {
 		t.Errorf("expected:\n%s\ngot:\n%s", expected, serialized)
 	}

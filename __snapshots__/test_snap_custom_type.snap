@@ -1,8 +1,9 @@
 ---
 title: Custom Type Test
 test_name: TestSnapCustomType
-file_path: /home/patrick/projects/freeze/freeze.go
+file_path: 
 func_name: 
+version: 0.1.0
 ---
 freeze_test.CustomStruct{
  Name: "Alice",

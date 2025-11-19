@@ -4,7 +4,7 @@ A [birdie](https://github.com/giacomocavalieri/birdie) and [insta](https://githu
 
 ![New snapshot screen](./assets/screenshot-new.png "New snapshot view")
 
-![Snapshot review CLI](./assets/screenshots-diff-cli "Snapshot diff view (CLI)")
+![Snapshot review CLI](./assets/screenshots-diff-cli.png "Snapshot diff view (CLI)")
 
 ## Installation
 
@@ -34,10 +34,32 @@ go run github.com/ptdewey/freeze/cmd/freeze review
 
 <!-- TODO: add example of `freeze.Review()` in go code -->
 
-Freeze also includes (in a separate Go module) with a [Bubbletea](https://github.com/charmbracelet/bubbletea) TUI in [cmd/tui/main.go](./cmd/tui/main.go). (The TUI is shipped in a separate module to make the added dependencies optional)
+Freeze also includes (in a separate Go module) a [Bubbletea](https://github.com/charmbracelet/bubbletea) TUI in [cmd/tui/main.go](./cmd/tui/main.go). (The TUI is shipped in a separate module to make the added dependencies optional)
+
+### TUI Usage
 
 ```sh
-# TODO: tui usage
+go run github.com/ptdewey/freeze/cmd/tui review
+```
+
+#### Interactive Controls
+
+- `a` - Accept current snapshot
+- `r` - Reject current snapshot
+- `s` - Skip current snapshot
+- `A` - Accept all remaining snapshots
+- `R` - Reject all remaining snapshots
+- `S` - Skip all remaining snapshots
+- `q` - Quit
+
+#### Alternative Commands
+
+```sh
+# Accept all new snapshots without review
+go run github.com/ptdewey/freeze/cmd/tui accept-all
+
+# Reject all new snapshots without review
+go run github.com/ptdewey/freeze/cmd/tui reject-all
 ```
 
 ## Disclaimer
