@@ -1,0 +1,11 @@
+---
+title: Scrubbed Emails
+test_name: TestScrubEmails
+file_name: scrubbers_test.go
+version: 0.1.0
+---
+{
+  "backup_email": "<EMAIL>",
+  "email": "<EMAIL>",
+  "name": "John Doe"
+}

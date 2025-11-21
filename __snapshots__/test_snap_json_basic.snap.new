@@ -1,0 +1,12 @@
+---
+title: SnapJSON Basic Object
+test_name: TestSnapJsonBasic
+file_name: freeze_test.go
+version: 0.1.0
+---
+{
+		"name": "John Doe",
+		"email": "john@example.com",
+		"age": 30,
+		"verified": true
+	}

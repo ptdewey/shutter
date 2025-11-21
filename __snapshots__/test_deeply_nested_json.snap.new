@@ -1,0 +1,15 @@
+---
+title: Deeply Nested JSON
+test_name: TestDeeplyNestedJson
+file_name: freeze_test.go
+version: 0.1.0
+---
+map[string]interface{}{
+ "L2": map[string]interface{}{
+  "L3": map[string]interface{}{
+   "L4": map[string]interface{}{
+    "Value": "deep value",
+   },
+  },
+ },
+}

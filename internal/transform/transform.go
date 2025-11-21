@@ -36,7 +36,7 @@ func TransformJSON(jsonStr string, config *Config) (string, error) {
 		return jsonStr, nil
 	}
 
-	var data interface{}
+	var data any
 	if err := json.Unmarshal([]byte(jsonStr), &data); err != nil {
 		return "", fmt.Errorf("failed to unmarshal JSON: %w", err)
 	}
@@ -61,11 +61,11 @@ func TransformJSON(jsonStr string, config *Config) (string, error) {
 }
 
 // walkAndFilter recursively walks the data structure and filters out ignored fields.
-func walkAndFilter(data interface{}, ignorePatterns []IgnorePattern) interface{} {
+func walkAndFilter(data any, ignorePatterns []IgnorePattern) any {
 	switch v := data.(type) {
-	case map[string]interface{}:
+	case map[string]any:
 		return filterMap(v, ignorePatterns)
-	case []interface{}:
+	case []any:
 		return filterSlice(v, ignorePatterns)
 	default:
 		return data
@@ -73,12 +73,12 @@ func walkAndFilter(data interface{}, ignorePatterns []IgnorePattern) interface{}
 }
 
 // filterMap filters a map, removing entries that match ignore patterns.
-func filterMap(m map[string]interface{}, ignorePatterns []IgnorePattern) map[string]interface{} {
-	result := make(map[string]interface{})
+func filterMap(m map[string]any, ignorePatterns []IgnorePattern) map[string]any {
+	result := make(map[string]any)
 	for key, value := range m {
 		// Convert value to string for comparison
 		valueStr := valueToString(value)
-		
+
 		// Check if this key-value pair should be ignored
 		shouldIgnore := false
 		for _, pattern := range ignorePatterns {
@@ -87,7 +87,7 @@ func filterMap(m map[string]interface{}, ignorePatterns []IgnorePattern) map[str
 				break
 			}
 		}
-		
+
 		if !shouldIgnore {
 			// Recursively filter nested structures
 			result[key] = walkAndFilter(value, ignorePatterns)
@@ -97,8 +97,8 @@ func filterMap(m map[string]interface{}, ignorePatterns []IgnorePattern) map[str
 }
 
 // filterSlice filters a slice, recursively processing each element.
-func filterSlice(s []interface{}, ignorePatterns []IgnorePattern) []interface{} {
-	result := make([]interface{}, len(s))
+func filterSlice(s []any, ignorePatterns []IgnorePattern) []any {
+	result := make([]any, len(s))
 	for i, item := range s {
 		result[i] = walkAndFilter(item, ignorePatterns)
 	}
@@ -106,7 +106,7 @@ func filterSlice(s []interface{}, ignorePatterns []IgnorePattern) []interface{} 
 }
 
 // valueToString converts various value types to string for comparison.
-func valueToString(value interface{}) string {
+func valueToString(value any) string {
 	switch v := value.(type) {
 	case string:
 		return v

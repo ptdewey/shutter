@@ -1,0 +1,16 @@
+---
+title: JSON with Special Characters
+test_name: TestJsonWithSpecialCharacters
+file_name: freeze_test.go
+version: 0.1.0
+---
+map[string]interface{}{
+ "backslash": "path\\to\\file",
+ "emoji": "😀 😃 😄 😁 😆",
+ "english": "Hello, World!",
+ "escaped": "quotes: \"double\" and 'single'",
+ "newlines": "line1\nline2\rline3\r\nline4",
+ "special_chars": "!@#$%^&*()_+-=[]{}|;:,.<>?",
+ "tabs": "col1\tcol2\tcol3",
+ "unicode": "こんにちは 世界 🌍",
+}

@@ -1,0 +1,12 @@
+---
+title: SnapJSON Simple Array
+test_name: TestSnapJsonSimpleArray
+file_name: freeze_test.go
+version: 0.1.0
+---
+[
+		"apple",
+		"banana",
+		"orange",
+		"grape"
+	]

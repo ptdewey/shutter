@@ -1,0 +1,51 @@
+---
+title: Nested Maps and Slices
+test_name: TestNestedMapsAndSlices
+file_name: freeze_test.go
+version: 0.1.0
+---
+map[string]interface{}{
+ "posts": map[string]interface{}{
+  "categories": []string{
+   "tech",
+   "lifestyle",
+   "news",
+  },
+  "drafts": 5,
+  "published": 42,
+ },
+ "stats": map[string]interface{}{
+  "daily": map[string]interface{}{
+   "clicks": 320,
+   "conversions": map[string]interface{}{
+    "by_source": map[string]int{
+     "organic": 25,
+     "paid": 15,
+     "referral": 5,
+    },
+    "total": 45,
+   },
+   "views": 1500,
+  },
+ },
+ "users": map[string]interface{}{
+  "active": []map[string]interface{}{
+   {
+    "id": 1,
+    "name": "Alice",
+    "verified": true,
+   },
+   {
+    "id": 2,
+    "name": "Bob",
+    "verified": false,
+   },
+  },
+  "inactive": []map[string]interface{}{
+   {
+    "id": 3,
+    "name": "Charlie",
+   },
+  },
+ },
+}

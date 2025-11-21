@@ -2,6 +2,8 @@ package freeze
 
 import (
 	"fmt"
+	"path/filepath"
+	"runtime"
 
 	"github.com/kortschak/utter"
 	"github.com/ptdewey/freeze/internal/diff"
@@ -87,17 +89,35 @@ func SnapWithOptions(t testingT, title string, opts []SnapshotOption, values ...
 func snap(t testingT, title string, content string) {
 	t.Helper()
 	testName := t.Name()
-	snapWithTitle(t, title, testName, content)
+
+	// Capture the caller's file name by walking up the call stack
+	// to find the first file that's not freeze.go  TODO: does this actually work for all cases?
+	fileName := "unknown"
+	for i := 1; i < 10; i++ {
+		_, file, _, ok := runtime.Caller(i)
+		if !ok {
+			break
+		}
+		baseName := filepath.Base(file)
+		// Skip frames within freeze.go to get to the actual test file
+		if baseName != "freeze.go" {
+			fileName = baseName
+			break
+		}
+	}
+
+	snapWithTitle(t, title, testName, fileName, content)
 }
 
-func snapWithTitle(t testingT, title string, testName string, content string) {
+func snapWithTitle(t testingT, title string, testName string, fileName string, content string) {
 	t.Helper()
 
 	snapshot := &files.Snapshot{
-		Title:   title,
-		Name:    testName,
-		Content: content,
-		Version: version,
+		Title:    title,
+		Test:     testName,
+		FileName: fileName,
+		Content:  content,
+		Version:  version,
 	}
 
 	accepted, err := files.ReadAccepted(testName)

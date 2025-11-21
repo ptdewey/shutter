@@ -1,0 +1,16 @@
+---
+title: Multiple Values Test
+test_name: TestSnapMultiple
+file_name: freeze_test.go
+version: 0.1.0
+---
+"value1"
+"value2"
+42
+"foo"
+"bar"
+"baz"
+"wibble"
+"wobble"
+"tock"
+interface{}(nil)

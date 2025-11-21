@@ -1,0 +1,28 @@
+---
+title: Real World API Response
+test_name: TestComplexRealWorldExample
+file_name: ignore_test.go
+version: 0.1.0
+---
+{
+  "metadata": {
+    "server_ip": "<IP>",
+    "session_token": "<JWT>",
+    "user_agent": "Mozilla/5.0"
+  },
+  "request_id": "<UUID>",
+  "timestamp": "<TIMESTAMP>",
+  "transaction": {
+    "amount": 99.99,
+    "currency": "USD",
+    "id": "txn_abc123",
+    "timestamp": "<TIMESTAMP>"
+  },
+  "user": {
+    "created_at": "<TIMESTAMP>",
+    "email": "<EMAIL>",
+    "id": "<UUID>",
+    "ip_address": "<IP>",
+    "name": "John Doe"
+  }
+}

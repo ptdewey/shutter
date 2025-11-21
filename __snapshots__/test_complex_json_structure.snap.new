@@ -1,0 +1,84 @@
+---
+title: Complex JSON Structure
+test_name: TestComplexJsonStructure
+file_name: freeze_test.go
+version: 0.1.0
+---
+map[string]interface{}{
+ "api": map[string]interface{}{
+  "endpoints": []interface{}{
+   map[string]interface{}{
+    "auth_required": true,
+    "method": "GET",
+    "path": "/users",
+    "rate_limit": map[string]interface{}{
+     "requests": 100.0,
+     "window": "1m",
+    },
+    "responses": map[string]interface{}{
+     "200": map[string]interface{}{
+      "description": "Success",
+      "schema": map[string]interface{}{
+       "items": map[string]interface{}{
+        "properties": map[string]interface{}{
+         "id": map[string]interface{}{
+          "type": "integer",
+         },
+         "name": map[string]interface{}{
+          "type": "string",
+         },
+        },
+        "type": "object",
+       },
+       "type": "array",
+      },
+     },
+     "401": map[string]interface{}{
+      "description": "Unauthorized",
+     },
+    },
+   },
+   map[string]interface{}{
+    "auth_required": true,
+    "method": "POST",
+    "path": "/users/{id}",
+    "rate_limit": map[string]interface{}{
+     "requests": 50.0,
+     "window": "1m",
+    },
+   },
+  },
+  "models": map[string]interface{}{
+   "User": map[string]interface{}{
+    "properties": map[string]interface{}{
+     "created_at": map[string]interface{}{
+      "format": "date-time",
+      "type": "string",
+     },
+     "email": map[string]interface{}{
+      "format": "email",
+      "type": "string",
+     },
+     "id": map[string]interface{}{
+      "type": "integer",
+     },
+     "roles": map[string]interface{}{
+      "items": map[string]interface{}{
+       "type": "string",
+      },
+      "type": "array",
+     },
+     "username": map[string]interface{}{
+      "type": "string",
+     },
+    },
+    "required": []interface{}{
+     "id",
+     "username",
+     "email",
+    },
+   },
+  },
+  "version": "2.0",
+ },
+}

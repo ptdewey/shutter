@@ -1,0 +1,10 @@
+---
+title: Custom Type Test
+test_name: TestSnapCustomType
+file_name: freeze_test.go
+version: 0.1.0
+---
+freeze_test.CustomStruct{
+ Name: "Alice",
+ Age: 30,
+}

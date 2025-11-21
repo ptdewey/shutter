@@ -1,0 +1,30 @@
+---
+title: JSON with Various Types
+test_name: TestJsonWithVariousTypes
+file_name: freeze_test.go
+version: 0.1.0
+---
+map[string]interface{}{
+ "array": []interface{}{
+  1.0,
+  2.0,
+  3.0,
+  "four",
+  5.5,
+ },
+ "boolean_false": false,
+ "boolean_true": true,
+ "empty_array": []interface{}{
+ },
+ "empty_object": map[string]interface{}{
+ },
+ "escaped_string": "line1\nline2\ttab",
+ "float": 3.14159,
+ "integer": 42.0,
+ "null_value": nil,
+ "object": map[string]interface{}{
+  "count": 10.0,
+  "nested": "value",
+ },
+ "string": "hello world",
+}

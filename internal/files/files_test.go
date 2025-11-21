@@ -35,14 +35,14 @@ func TestSnapshotFileName(t *testing.T) {
 func TestSerializeDeserialize(t *testing.T) {
 	snap := &files.Snapshot{
 		Title:    "Example Title",
-		Name:     "TestExample",
-		FilePath: "/path/to/test.go",
+		Test:     "TestExample",
+		FileName: "example_test.go",
 		Version:  "1.0.0",
 		Content:  "test content\nmultiline",
 	}
 
 	serialized := snap.Serialize()
-	expected := "---\ntitle: Example Title\ntest_name: TestExample\nfile_path: /path/to/test.go\nfunc_name: \nversion: 1.0.0\n---\ntest content\nmultiline"
+	expected := "---\ntitle: Example Title\ntest_name: TestExample\nfile_name: example_test.go\nversion: 1.0.0\n---\ntest content\nmultiline"
 	if serialized != expected {
 		t.Errorf("Serialize():\nexpected:\n%s\n\ngot:\n%s", expected, serialized)
 	}
@@ -55,11 +55,11 @@ func TestSerializeDeserialize(t *testing.T) {
 	if deserialized.Title != snap.Title {
 		t.Errorf("Title mismatch: %s != %s", deserialized.Title, snap.Title)
 	}
-	if deserialized.Name != snap.Name {
-		t.Errorf("Name mismatch: %s != %s", deserialized.Name, snap.Name)
+	if deserialized.Test != snap.Test {
+		t.Errorf("Name mismatch: %s != %s", deserialized.Test, snap.Test)
 	}
-	if deserialized.FilePath != snap.FilePath {
-		t.Errorf("FilePath mismatch: %s != %s", deserialized.FilePath, snap.FilePath)
+	if deserialized.FileName != snap.FileName {
+		t.Errorf("FileName mismatch: %s != %s", deserialized.FileName, snap.FileName)
 	}
 	if deserialized.Version != snap.Version {
 		t.Errorf("Version mismatch: %s != %s", deserialized.Version, snap.Version)
@@ -122,22 +122,6 @@ func TestDeserializeValidFormats(t *testing.T) {
 			"",
 			"line1\nline2\nline3",
 		},
-		{
-			"with extra fields",
-			"---\ntitle: Extra Title\ntest_name: Test\nfile_path: /path\nfunc_name: \nextra: ignored\n---\ncontent",
-			"Extra Title",
-			"Test",
-			"",
-			"content",
-		},
-		{
-			"backward compatibility - no title",
-			"---\ntest_name: Test\nfile_path: /path\nfunc_name: \n---\ncontent",
-			"",
-			"Test",
-			"",
-			"content",
-		},
 	}
 
 	for _, tt := range tests {
@@ -149,8 +133,8 @@ func TestDeserializeValidFormats(t *testing.T) {
 			if snap.Title != tt.wantTitle {
 				t.Errorf("Title = %s, want %s", snap.Title, tt.wantTitle)
 			}
-			if snap.Name != tt.wantTest {
-				t.Errorf("Name = %s, want %s", snap.Name, tt.wantTest)
+			if snap.Test != tt.wantTest {
+				t.Errorf("Name = %s, want %s", snap.Test, tt.wantTest)
 			}
 			if snap.Version != tt.wantVersion {
 				t.Errorf("Version = %s, want %s", snap.Version, tt.wantVersion)
@@ -165,7 +149,7 @@ func TestDeserializeValidFormats(t *testing.T) {
 func TestSaveAndReadSnapshot(t *testing.T) {
 	snap := &files.Snapshot{
 		Title:   "Save Read Title",
-		Name:    "TestSaveRead",
+		Test:    "TestSaveRead",
 		Content: "saved content",
 	}
 
@@ -195,7 +179,7 @@ func TestReadSnapshotNotFound(t *testing.T) {
 func TestAcceptSnapshot(t *testing.T) {
 	newSnap := &files.Snapshot{
 		Title:   "Accept Title",
-		Name:    "TestAccept",
+		Test:    "TestAccept",
 		Content: "new content to accept",
 	}
 
@@ -227,7 +211,7 @@ func TestAcceptSnapshot(t *testing.T) {
 func TestRejectSnapshot(t *testing.T) {
 	snap := &files.Snapshot{
 		Title:   "Reject Title",
-		Name:    "TestReject",
+		Test:    "TestReject",
 		Content: "content to reject",
 	}
 

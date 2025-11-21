@@ -1,0 +1,11 @@
+---
+title: Scrubbed IPs
+test_name: TestScrubIPAddresses
+file_name: scrubbers_test.go
+version: 0.1.0
+---
+{
+  "client_ip": "<IP>",
+  "message": "Connection from <IP>",
+  "server_ip": "<IP>"
+}

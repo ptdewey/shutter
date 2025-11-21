@@ -1,0 +1,13 @@
+---
+title: Multiple Scrubbers
+test_name: TestMultipleScrubbers
+file_name: scrubbers_test.go
+version: 0.1.0
+---
+{
+  "created_at": "<TIMESTAMP>",
+  "email": "<EMAIL>",
+  "ip_address": "<IP>",
+  "name": "John Doe",
+  "user_id": "<UUID>"
+}

@@ -1,0 +1,18 @@
+---
+title: Nested Ignore Patterns
+test_name: TestNestedIgnorePatterns
+file_name: ignore_test.go
+version: 0.1.0
+---
+{
+  "admin": {},
+  "user": {
+    "email": "john@example.com",
+    "id": 1,
+    "name": "John Doe",
+    "profile": {
+      "bio": "Developer",
+      "website": "https://example.com"
+    }
+  }
+}

@@ -1,0 +1,54 @@
+---
+title: JSON with Mixed Arrays
+test_name: TestJsonWithMixedArrays
+file_name: freeze_test.go
+version: 0.1.0
+---
+map[string]interface{}{
+ "heterogeneous_array": []interface{}{
+  "string",
+  42.0,
+  3.14,
+  true,
+  nil,
+  map[string]interface{}{
+   "object": "value",
+  },
+  []interface{}{
+   1.0,
+   2.0,
+   3.0,
+  },
+ },
+ "matrix": []interface{}{
+  []interface{}{
+   1.0,
+   2.0,
+   3.0,
+  },
+  []interface{}{
+   4.0,
+   5.0,
+   6.0,
+  },
+  []interface{}{
+   7.0,
+   8.0,
+   9.0,
+  },
+ },
+ "object_array": []interface{}{
+  map[string]interface{}{
+   "id": 1.0,
+   "name": "Item 1",
+  },
+  map[string]interface{}{
+   "id": 2.0,
+   "name": "Item 2",
+  },
+  map[string]interface{}{
+   "id": 3.0,
+   "name": "Item 3",
+  },
+ },
+}

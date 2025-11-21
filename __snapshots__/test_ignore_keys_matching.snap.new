@@ -1,0 +1,10 @@
+---
+title: Ignore Keys Matching Pattern
+test_name: TestIgnoreKeysMatching
+file_name: ignore_test.go
+version: 0.1.0
+---
+{
+  "product_id": 100,
+  "product_name": "Widget"
+}

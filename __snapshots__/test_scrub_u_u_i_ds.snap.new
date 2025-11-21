@@ -1,0 +1,11 @@
+---
+title: Scrubbed UUIDs
+test_name: TestScrubUUIDs
+file_name: scrubbers_test.go
+version: 0.1.0
+---
+{
+  "name": "John Doe",
+  "session_id": "<UUID>",
+  "user_id": "<UUID>"
+}

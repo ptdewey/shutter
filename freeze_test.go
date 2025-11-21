@@ -46,13 +46,14 @@ func TestMap(t *testing.T) {
 
 func TestSerializeDeserialize(t *testing.T) {
 	snap := &freeze.Snapshot{
-		Title:   "My Test Title",
-		Name:    "TestExample",
-		Content: "test content\nmultiline",
+		Title:    "My Test Title",
+		Test:     "TestExample",
+		FileName: "test_file.go",
+		Content:  "test content\nmultiline",
 	}
 
 	serialized := snap.Serialize()
-	expected := "---\ntitle: My Test Title\ntest_name: TestExample\nfile_path: \nfunc_name: \nversion: \n---\ntest content\nmultiline"
+	expected := "---\ntitle: My Test Title\ntest_name: TestExample\nfile_name: test_file.go\nversion: \n---\ntest content\nmultiline"
 	if serialized != expected {
 		t.Errorf("expected:\n%s\ngot:\n%s", expected, serialized)
 	}
@@ -65,8 +66,11 @@ func TestSerializeDeserialize(t *testing.T) {
 	if deserialized.Title != snap.Title {
 		t.Errorf("title mismatch: %s != %s", deserialized.Title, snap.Title)
 	}
-	if deserialized.Name != snap.Name {
-		t.Errorf("test name mismatch: %s != %s", deserialized.Name, snap.Name)
+	if deserialized.Test != snap.Test {
+		t.Errorf("test name mismatch: %s != %s", deserialized.Test, snap.Test)
+	}
+	if deserialized.FileName != snap.FileName {
+		t.Errorf("file name mismatch: %s != %s", deserialized.FileName, snap.FileName)
 	}
 	if deserialized.Content != snap.Content {
 		t.Errorf("content mismatch: %s != %s", deserialized.Content, snap.Content)
@@ -76,7 +80,7 @@ func TestSerializeDeserialize(t *testing.T) {
 func TestFileOperations(t *testing.T) {
 	snap := &freeze.Snapshot{
 		Title:   "File Ops Title",
-		Name:    "TestFileOps",
+		Test:    "TestFileOps",
 		Content: "file test content",
 	}
 
@@ -156,13 +160,13 @@ func TestHistogramDiff(t *testing.T) {
 func TestDiffSnapshotBox(t *testing.T) {
 	old := &freeze.Snapshot{
 		Title:   "Diff Test Title",
-		Name:    "TestDiff",
+		Test:    "TestDiff",
 		Content: "old content",
 	}
 
 	new := &freeze.Snapshot{
 		Title:   "Diff Test Title",
-		Name:    "TestDiff",
+		Test:    "TestDiff",
 		Content: "new content",
 	}
 
@@ -179,7 +183,7 @@ func TestDiffSnapshotBox(t *testing.T) {
 func TestNewSnapshotBox(t *testing.T) {
 	snap := &freeze.Snapshot{
 		Title:   "New Test Title",
-		Name:    "TestNew",
+		Test:    "TestNew",
 		Content: "test content",
 	}
 
@@ -221,7 +225,7 @@ type User struct {
 	Active    bool
 	CreatedAt time.Time
 	Roles     []string
-	Metadata  map[string]interface{}
+	Metadata  map[string]any
 }
 
 type Post struct {
@@ -252,11 +256,11 @@ func TestComplexNestedStructure(t *testing.T) {
 		Active:    true,
 		CreatedAt: time.Date(2023, 1, 15, 10, 30, 0, 0, time.UTC),
 		Roles:     []string{"admin", "moderator", "user"},
-		Metadata: map[string]interface{}{
+		Metadata: map[string]any{
 			"theme":         "dark",
 			"notifications": true,
 			"language":      "en",
-			"preferences": map[string]interface{}{
+			"preferences": map[string]any{
 				"email_frequency": "weekly",
 				"notifications":   true,
 			},
@@ -311,7 +315,7 @@ func TestMultipleComplexStructures(t *testing.T) {
 			Email:    "alice@example.com",
 			Active:   true,
 			Roles:    []string{"user", "moderator"},
-			Metadata: map[string]interface{}{
+			Metadata: map[string]any{
 				"verified": true,
 				"badge":    "verified",
 			},
@@ -322,7 +326,7 @@ func TestMultipleComplexStructures(t *testing.T) {
 			Email:    "bob@example.com",
 			Active:   false,
 			Roles:    []string{"user"},
-			Metadata: map[string]interface{}{
+			Metadata: map[string]any{
 				"verified": false,
 				"avatar":   "https://example.com/bob.jpg",
 			},
@@ -333,7 +337,7 @@ func TestMultipleComplexStructures(t *testing.T) {
 			Email:    "charlie@example.com",
 			Active:   true,
 			Roles:    []string{"user", "admin"},
-			Metadata: map[string]interface{}{
+			Metadata: map[string]any{
 				"verified":         true,
 				"account_age_days": 365,
 			},
@@ -347,8 +351,8 @@ func TestStructureWithInterface(t *testing.T) {
 	type Response struct {
 		Status  string
 		Message string
-		Data    interface{}
-		Meta    map[string]interface{}
+		Data    any
+		Meta    map[string]any
 	}
 
 	responses := []Response{
@@ -361,7 +365,7 @@ func TestStructureWithInterface(t *testing.T) {
 				Email:    "john@example.com",
 				Active:   true,
 			},
-			Meta: map[string]interface{}{
+			Meta: map[string]any{
 				"request_id": "req-123",
 				"timestamp":  "2023-01-20T10:30:00Z",
 			},
@@ -370,7 +374,7 @@ func TestStructureWithInterface(t *testing.T) {
 			Status:  "error",
 			Message: "User not found",
 			Data:    nil,
-			Meta: map[string]interface{}{
+			Meta: map[string]any{
 				"error_code": 404,
 				"error_type": "NOT_FOUND",
 			},
@@ -385,7 +389,7 @@ func TestStructureWithInterface(t *testing.T) {
 					Published: true,
 				},
 			},
-			Meta: map[string]interface{}{
+			Meta: map[string]any{
 				"total_count": 10,
 				"page":        1,
 				"per_page":    20,
@@ -397,9 +401,9 @@ func TestStructureWithInterface(t *testing.T) {
 }
 
 func TestNestedMapsAndSlices(t *testing.T) {
-	complexData := map[string]interface{}{
-		"users": map[string]interface{}{
-			"active": []map[string]interface{}{
+	complexData := map[string]any{
+		"users": map[string]any{
+			"active": []map[string]any{
 				{
 					"id":       1,
 					"name":     "Alice",
@@ -411,23 +415,23 @@ func TestNestedMapsAndSlices(t *testing.T) {
 					"verified": false,
 				},
 			},
-			"inactive": []map[string]interface{}{
+			"inactive": []map[string]any{
 				{
 					"id":   3,
 					"name": "Charlie",
 				},
 			},
 		},
-		"posts": map[string]interface{}{
+		"posts": map[string]any{
 			"published":  42,
 			"drafts":     5,
 			"categories": []string{"tech", "lifestyle", "news"},
 		},
-		"stats": map[string]interface{}{
-			"daily": map[string]interface{}{
+		"stats": map[string]any{
+			"daily": map[string]any{
 				"views":  1500,
 				"clicks": 320,
-				"conversions": map[string]interface{}{
+				"conversions": map[string]any{
 					"total": 45,
 					"by_source": map[string]int{
 						"organic":  25,
@@ -543,7 +547,7 @@ func TestJsonObject(t *testing.T) {
 		"message": null
 	}`
 
-	var data interface{}
+	var data any
 	if err := json.Unmarshal([]byte(jsonStr), &data); err != nil {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
@@ -611,7 +615,7 @@ func TestComplexJsonStructure(t *testing.T) {
 		}
 	}`
 
-	var data interface{}
+	var data any
 	if err := json.Unmarshal([]byte(jsonStr), &data); err != nil {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
@@ -649,7 +653,7 @@ func TestJsonArrayOfObjects(t *testing.T) {
 		}
 	]`
 
-	var data interface{}
+	var data any
 	if err := json.Unmarshal([]byte(jsonStr), &data); err != nil {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
@@ -675,7 +679,7 @@ func TestJsonWithVariousTypes(t *testing.T) {
 		"escaped_string": "line1\nline2\ttab"
 	}`
 
-	var data interface{}
+	var data any
 	if err := json.Unmarshal([]byte(jsonStr), &data); err != nil {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
@@ -703,7 +707,7 @@ func TestJsonNumbers(t *testing.T) {
 		}
 	}`
 
-	var data interface{}
+	var data any
 	if err := json.Unmarshal([]byte(jsonStr), &data); err != nil {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
@@ -723,7 +727,7 @@ func TestJsonWithSpecialCharacters(t *testing.T) {
 		"backslash": "path\\to\\file"
 	}`
 
-	var data interface{}
+	var data any
 	if err := json.Unmarshal([]byte(jsonStr), &data); err != nil {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
@@ -767,7 +771,7 @@ func TestGoStructMarshalledToJson(t *testing.T) {
 		t.Fatalf("failed to marshal json: %v", err)
 	}
 
-	var data interface{}
+	var data any
 	if err := json.Unmarshal(jsonBytes, &data); err != nil {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
@@ -807,7 +811,7 @@ func TestDeeplyNestedJson(t *testing.T) {
 		t.Fatalf("failed to marshal json: %v", err)
 	}
 
-	var data interface{}
+	var data any
 	if err := json.Unmarshal(jsonBytes, &data); err != nil {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
@@ -883,7 +887,7 @@ func TestLargeJson(t *testing.T) {
 		t.Fatalf("failed to marshal json: %v", err)
 	}
 
-	var data interface{}
+	var data any
 	if err := json.Unmarshal(jsonBytes, &data); err != nil {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
@@ -914,7 +918,7 @@ func TestJsonWithMixedArrays(t *testing.T) {
 		]
 	}`
 
-	var data interface{}
+	var data any
 	if err := json.Unmarshal([]byte(jsonStr), &data); err != nil {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}

@@ -2,6 +2,7 @@ package freeze
 
 import (
 	"regexp"
+	"slices"
 	"strings"
 )
 
@@ -64,12 +65,7 @@ type keyOnlyIgnore struct {
 }
 
 func (k *keyOnlyIgnore) ShouldIgnore(key, value string) bool {
-	for _, ignoreKey := range k.keys {
-		if ignoreKey == key {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(k.keys, key)
 }
 
 // IgnoreKeys creates an ignore pattern that ignores the specified keys
@@ -118,12 +114,7 @@ type valueOnlyIgnore struct {
 }
 
 func (v *valueOnlyIgnore) ShouldIgnore(key, value string) bool {
-	for _, ignoreValue := range v.values {
-		if ignoreValue == value {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(v.values, value)
 }
 
 // IgnoreValues creates an ignore pattern that ignores the specified values

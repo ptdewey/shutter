@@ -1,0 +1,7 @@
+---
+title: Custom Scrubber
+test_name: TestCustomScrubber
+file_name: scrubbers_test.go
+version: 0.1.0
+---
+hello world! this is a test.

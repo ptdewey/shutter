@@ -1,0 +1,12 @@
+---
+title: Scrubbed API Keys
+test_name: TestScrubAPIKeys
+file_name: scrubbers_test.go
+version: 0.1.0
+---
+{
+  "api_key_prod": "<API_KEY>",
+  "name": "Test Config",
+  "stripe_key": "<API_KEY>",
+  "test_key": "<API_KEY>"
+}

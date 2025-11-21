@@ -1,0 +1,12 @@
+---
+title: Scrubbed Unix Timestamps
+test_name: TestUnixTimestampScrubbing
+file_name: scrubbers_test.go
+version: 0.1.0
+---
+{
+  "created": <UNIX_TS>,
+  "deleted": <UNIX_TS>,
+  "name": "Test Event",
+  "updated": <UNIX_TS>
+}

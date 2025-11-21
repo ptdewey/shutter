@@ -23,73 +23,29 @@ const (
 	DiffNew
 )
 
-func newSnapshotBoxInternal(snap *files.Snapshot) string {
-	width := TerminalWidth()
-	snapshotFileName := files.SnapshotFileName(snap.Name) + ".snap.new"
-
-	var sb strings.Builder
-	sb.WriteString("─── " + "New Snapshot " + strings.Repeat("─", width-15) + "\n\n")
-
-	if snap.Title != "" {
-		sb.WriteString(fmt.Sprintf("  title: %s\n", Blue(snap.Title)))
-	}
-	if snap.Name != "" {
-		sb.WriteString(fmt.Sprintf("  test: %s\n", Blue(snap.Name)))
-	}
-	// TODO: maybe put this on the "new snapshot row"? (or only show on the diff view)
-	if snapshotFileName != "" {
-		sb.WriteString(fmt.Sprintf("  file: %s\n", Gray(snapshotFileName)))
-	}
-	sb.WriteString("\n")
-
-	lines := strings.Split(snap.Content, "\n")
-	numLines := len(lines)
-	lineNumWidth := len(strconv.Itoa(numLines))
-
-	topBar := strings.Repeat("─", lineNumWidth+3) + "┬" +
-		strings.Repeat("─", width-lineNumWidth-2) + "\n"
-	sb.WriteString(topBar)
-
-	for i, line := range lines {
-		lineNum := fmt.Sprintf("%*d", lineNumWidth, i+1)
-		prefix := fmt.Sprintf("%s %s", Green(lineNum), Green("+"))
-
-		if len(line) > width-len(prefix)-4 {
-			line = line[:width-len(prefix)-7] + "..."
-		}
-
-		display := fmt.Sprintf("%s %s", prefix, Green(line))
-		sb.WriteString(fmt.Sprintf("  %s\n", display))
-	}
-
-	bottomBar := strings.Repeat("─", lineNumWidth+3) + "┴" +
-		strings.Repeat("─", width-lineNumWidth-2) + "\n"
-	sb.WriteString(bottomBar)
-
-	return sb.String()
-}
-
 func NewSnapshotBox(snap *files.Snapshot) string {
 	return newSnapshotBoxInternal(snap)
 }
 
 func DiffSnapshotBox(old, new *files.Snapshot, diffLines []DiffLine) string {
 	width := TerminalWidth()
-	snapshotFileName := files.SnapshotFileName(new.Name) + ".snap"
+	snapshotFileName := files.SnapshotFileName(new.Test) + ".snap"
 
 	var sb strings.Builder
 	sb.WriteString(strings.Repeat("─", width) + "\n")
+	// TODO: maybe make helper functions for this, swap coloring between the key and the value
+	// TODO: maybe show the snapshot file name in gray next to the "a/r/s" options
+	// (i.e. "a accept -> snap_file_name.snap", "reject" w/strikethrough?, skip, keeps "*snap.new")
 	sb.WriteString(fmt.Sprintf("  file: %s\n", Gray(snapshotFileName)))
 	sb.WriteString(fmt.Sprintf("  %s\n", Blue("Snapshot Diff")))
 	if new.Title != "" {
 		sb.WriteString(fmt.Sprintf("  title: %s\n", Blue("\""+new.Title+"\"")))
 	}
-	sb.WriteString(fmt.Sprintf("  test: %s\n", Blue("\""+new.Name+"\"")))
+	sb.WriteString(fmt.Sprintf("  test: %s\n", Blue("\""+new.Test+"\"")))
 	sb.WriteString(strings.Repeat("─", width) + "\n")
 
 	// Calculate max line numbers for proper spacing
-	maxOldNum := 0
-	maxNewNum := 0
+	maxOldNum, maxNewNum := 0, 0
 	for _, dl := range diffLines {
 		if dl.OldNumber > maxOldNum {
 			maxOldNum = dl.OldNumber
@@ -137,5 +93,52 @@ func DiffSnapshotBox(old, new *files.Snapshot, diffLines []DiffLine) string {
 	}
 
 	sb.WriteString(strings.Repeat("─", width) + "\n")
+	return sb.String()
+}
+
+func newSnapshotBoxInternal(snap *files.Snapshot) string {
+	width := TerminalWidth()
+
+	var sb strings.Builder
+	sb.WriteString("─── " + "New Snapshot " + strings.Repeat("─", width-15) + "\n\n")
+
+	if snap.Title != "" {
+		sb.WriteString(Blue("  title: ") + snap.Title + "\n")
+		// sb.WriteString(fmt.Sprintf("  title: %s\n", Blue(snap.Title)))
+	}
+	if snap.Test != "" {
+		// sb.WriteString(fmt.Sprintf("  test: %s\n", Blue(snap.Test)))
+		sb.WriteString(Blue("  test: ") + snap.Test + "\n")
+	}
+	if snap.FileName != "" {
+		// sb.WriteString(fmt.Sprintf("  file: %s\n", Gray(snap.FileName)))
+		sb.WriteString(Blue("  file: ") + snap.FileName + "\n")
+	}
+	sb.WriteString("\n")
+
+	lines := strings.Split(snap.Content, "\n")
+	numLines := len(lines)
+	lineNumWidth := len(strconv.Itoa(numLines))
+
+	topBar := strings.Repeat("─", lineNumWidth+3) + "┬" +
+		strings.Repeat("─", width-lineNumWidth-2) + "\n"
+	sb.WriteString(topBar)
+
+	for i, line := range lines {
+		lineNum := fmt.Sprintf("%*d", lineNumWidth, i+1)
+		prefix := fmt.Sprintf("%s %s", Green(lineNum), Green("+"))
+
+		if len(line) > width-len(prefix)-4 {
+			line = line[:width-len(prefix)-7] + "..."
+		}
+
+		display := fmt.Sprintf("%s %s", prefix, Green(line))
+		sb.WriteString(fmt.Sprintf("  %s\n", display))
+	}
+
+	bottomBar := strings.Repeat("─", lineNumWidth+3) + "┴" +
+		strings.Repeat("─", width-lineNumWidth-2) + "\n"
+	sb.WriteString(bottomBar)
+
 	return sb.String()
 }

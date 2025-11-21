@@ -1,0 +1,20 @@
+---
+title: Ignore in Arrays
+test_name: TestIgnoreInArrays
+file_name: ignore_test.go
+version: 0.1.0
+---
+{
+  "users": [
+    {
+      "email": "alice@example.com",
+      "id": 1,
+      "name": "Alice"
+    },
+    {
+      "email": "bob@example.com",
+      "id": 2,
+      "name": "Bob"
+    }
+  ]
+}

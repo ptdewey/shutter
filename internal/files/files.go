@@ -9,18 +9,17 @@ import (
 )
 
 type Snapshot struct {
-	Title    string
-	Name     string
-	FilePath string
-	FuncName string
 	Version  string
+	Title    string
+	Test     string
+	FileName string
 	Content  string
 }
 
 func (s *Snapshot) Serialize() string {
 	header := fmt.Sprintf(
-		"---\ntitle: %s\ntest_name: %s\nfile_path: %s\nfunc_name: %s\nversion: %s\n---\n",
-		s.Title, s.Name, s.FilePath, s.FuncName, s.Version,
+		"---\ntitle: %s\ntest_name: %s\nfile_name: %s\nversion: %s\n---\n",
+		s.Title, s.Test, s.FileName, s.Version,
 	)
 	return header + s.Content
 }
@@ -54,11 +53,9 @@ func Deserialize(raw string) (*Snapshot, error) {
 		case "title":
 			snap.Title = value
 		case "test_name":
-			snap.Name = value
-		case "file_path":
-			snap.FilePath = value
-		case "func_name":
-			snap.FuncName = value
+			snap.Test = value
+		case "file_name":
+			snap.FileName = value
 		case "version":
 			snap.Version = value
 		}
@@ -128,11 +125,11 @@ func SaveSnapshot(snap *Snapshot, state string) error {
 	var fileName string
 	switch state {
 	case "accepted":
-		fileName = SnapshotFileName(snap.Name) + ".snap"
+		fileName = SnapshotFileName(snap.Test) + ".snap"
 	case "new":
-		fileName = SnapshotFileName(snap.Name) + ".snap.new"
+		fileName = SnapshotFileName(snap.Test) + ".snap.new"
 	default:
-		fileName = SnapshotFileName(snap.Name) + "." + state
+		fileName = SnapshotFileName(snap.Test) + "." + state
 	}
 	filePath := filepath.Join(snapshotDir, fileName)
 

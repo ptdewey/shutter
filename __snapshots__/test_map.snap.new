@@ -1,0 +1,10 @@
+---
+title: Map Test
+test_name: TestMap
+file_name: freeze_test.go
+version: 0.1.0
+---
+map[string]interface{}{
+ "foo": "bar",
+ "wibble": "wobble",
+}

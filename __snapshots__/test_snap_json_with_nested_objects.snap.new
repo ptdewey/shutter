@@ -1,0 +1,22 @@
+---
+title: SnapJSON Nested Objects
+test_name: TestSnapJsonWithNestedObjects
+file_name: freeze_test.go
+version: 0.1.0
+---
+{
+		"user": {
+			"id": 42,
+			"profile": {
+				"username": "jane_smith",
+				"avatar": "https://example.com/avatar.jpg",
+				"settings": {
+					"theme": "dark",
+					"notifications": true,
+					"language": "en"
+				}
+			},
+			"permissions": ["read", "write", "admin"]
+		},
+		"created_at": "2023-06-15T10:30:00Z"
+	}

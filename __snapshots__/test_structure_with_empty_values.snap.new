@@ -1,0 +1,38 @@
+---
+title: Structure with Empty Values
+test_name: TestStructureWithEmptyValues
+file_name: freeze_test.go
+version: 0.1.0
+---
+[]freeze_test.Container{
+ {
+  Items: []string{
+  },
+  Tags: map[string]string{
+  },
+  OptionalID: (*int)(nil),
+  Count: 0,
+  Active: false,
+ },
+ {
+  Items: []string(nil),
+  Tags: map[string]string(nil),
+  OptionalID: (*int)(nil),
+  Count: 0,
+  Active: true,
+ },
+ {
+  Items: []string{
+   "a",
+   "b",
+   "c",
+  },
+  Tags: map[string]string{
+   "env": "dev",
+   "type": "test",
+  },
+  OptionalID: &int(42),
+  Count: 3,
+  Active: true,
+ },
+}

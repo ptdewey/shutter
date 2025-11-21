@@ -1,0 +1,11 @@
+---
+title: Custom Regex Scrubber
+test_name: TestRegexScrubber
+file_name: scrubbers_test.go
+version: 0.1.0
+---
+{
+  "api_key": "<API_KEY>",
+  "name": "Test User",
+  "secret_key": "<API_KEY>"
+}

@@ -1,0 +1,25 @@
+---
+title: SnapJSON Mixed Types
+test_name: TestSnapJsonMixedTypes
+file_name: freeze_test.go
+version: 0.1.0
+---
+{
+		"mixed_array": [
+			"string",
+			123,
+			45.67,
+			true,
+			false,
+			null,
+			{"nested": "object"},
+			[1, 2, 3]
+		],
+		"complex": [
+			{"type": "user", "id": 1},
+			{"type": "post", "id": 100},
+			[1, 2, 3],
+			"string",
+			null
+		]
+	}

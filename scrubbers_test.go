@@ -141,7 +141,7 @@ func TestScrubAPIKeys(t *testing.T) {
 }
 
 func TestScrubWithSnapFunction(t *testing.T) {
-	data := map[string]interface{}{
+	data := map[string]any{
 		"user_id":    "550e8400-e29b-41d4-a716-446655440000",
 		"email":      "user@example.com",
 		"created_at": "2023-01-15T10:30:00Z",

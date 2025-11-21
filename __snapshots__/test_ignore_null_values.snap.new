@@ -1,0 +1,11 @@
+---
+title: Ignore Null Values
+test_name: TestIgnoreNullValues
+file_name: ignore_test.go
+version: 0.1.0
+---
+{
+  "age": 30,
+  "email": "john@example.com",
+  "name": "John Doe"
+}

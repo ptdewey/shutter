@@ -1,0 +1,7 @@
+---
+title: Exact Match Scrubber
+test_name: TestExactMatchScrubber
+file_name: scrubbers_test.go
+version: 0.1.0
+---
+The secret password is '<PASSWORD>' and should be hidden.
