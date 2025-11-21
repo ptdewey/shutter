@@ -1,0 +1,13 @@
+---
+title: Scrubbed Dates
+test_name: TestScrubDates
+file_path: 
+func_name: 
+version: 0.1.0
+---
+{
+  "birth_date": "<DATE>",
+  "hire_date": "<DATE>",
+  "name": "John Doe",
+  "us_format": "<DATE>"
+}

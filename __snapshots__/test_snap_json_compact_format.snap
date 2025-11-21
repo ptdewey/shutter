@@ -5,13 +5,4 @@ file_path:
 func_name: 
 version: 0.1.0
 ---
-{
-  "id": 1,
-  "in_stock": true,
-  "name": "Product",
-  "price": 99.99,
-  "tags": [
-    "electronics",
-    "gadgets"
-  ]
-}
+{"id":1,"name":"Product","price":99.99,"in_stock":true,"tags":["electronics","gadgets"]}

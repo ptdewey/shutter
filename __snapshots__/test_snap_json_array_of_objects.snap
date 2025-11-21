@@ -6,25 +6,25 @@ func_name:
 version: 0.1.0
 ---
 [
-  {
-    "id": 1,
-    "likes": 42,
-    "title": "First Post",
-    "type": "post",
-    "views": 150
-  },
-  {
-    "id": 2,
-    "likes": 75,
-    "title": "Second Post",
-    "type": "post",
-    "views": 280
-  },
-  {
-    "id": 3,
-    "likes": 120,
-    "title": "Third Post",
-    "type": "post",
-    "views": 450
-  }
-]
+		{
+			"id": 1,
+			"type": "post",
+			"title": "First Post",
+			"views": 150,
+			"likes": 42
+		},
+		{
+			"id": 2,
+			"type": "post",
+			"title": "Second Post",
+			"views": 280,
+			"likes": 75
+		},
+		{
+			"id": 3,
+			"type": "post",
+			"title": "Third Post",
+			"views": 450,
+			"likes": 120
+		}
+	]

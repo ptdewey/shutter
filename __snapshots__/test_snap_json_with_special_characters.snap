@@ -6,11 +6,11 @@ func_name:
 version: 0.1.0
 ---
 {
-  "escaped": "line1\nline2\ttab\rcarriage",
-  "html": "\u003cdiv class=\"container\"\u003eContent\u003c/div\u003e",
-  "paths": "C:\\Users\\name\\Documents\\file.txt",
-  "quotes": "He said \"hello\" and she said 'goodbye'",
-  "regex": "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$",
-  "special": "!@#$%^\u0026*()_+-=[]{}|;:',.\u003c\u003e?/",
-  "unicode": "Hello 世界 🌍 مرحبا Привет"
-}
+		"special": "!@#$%^&*()_+-=[]{}|;:',.<>?/",
+		"escaped": "line1\nline2\ttab\rcarriage",
+		"quotes": "He said \"hello\" and she said 'goodbye'",
+		"unicode": "Hello 世界 🌍 مرحبا Привет",
+		"paths": "C:\\Users\\name\\Documents\\file.txt",
+		"html": "<div class=\"container\">Content</div>",
+		"regex": "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$"
+	}

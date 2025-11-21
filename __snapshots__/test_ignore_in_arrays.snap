@@ -1,0 +1,21 @@
+---
+title: Ignore in Arrays
+test_name: TestIgnoreInArrays
+file_path: 
+func_name: 
+version: 0.1.0
+---
+{
+  "users": [
+    {
+      "email": "alice@example.com",
+      "id": 1,
+      "name": "Alice"
+    },
+    {
+      "email": "bob@example.com",
+      "id": 2,
+      "name": "Bob"
+    }
+  ]
+}

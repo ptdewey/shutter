@@ -1,0 +1,11 @@
+---
+title: Custom Ignore Function
+test_name: TestCustomIgnore
+file_path: 
+func_name: 
+version: 0.1.0
+---
+{
+  "grade": "A",
+  "name": "John Doe"
+}

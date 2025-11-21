@@ -1,0 +1,13 @@
+---
+title: Scrubbed Unix Timestamps
+test_name: TestUnixTimestampScrubbing
+file_path: 
+func_name: 
+version: 0.1.0
+---
+{
+  "created": <UNIX_TS>,
+  "deleted": <UNIX_TS>,
+  "name": "Test Event",
+  "updated": <UNIX_TS>
+}

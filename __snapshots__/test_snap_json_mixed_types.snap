@@ -6,37 +6,21 @@ func_name:
 version: 0.1.0
 ---
 {
-  "complex": [
-    {
-      "id": 1,
-      "type": "user"
-    },
-    {
-      "id": 100,
-      "type": "post"
-    },
-    [
-      1,
-      2,
-      3
-    ],
-    "string",
-    null
-  ],
-  "mixed_array": [
-    "string",
-    123,
-    45.67,
-    true,
-    false,
-    null,
-    {
-      "nested": "object"
-    },
-    [
-      1,
-      2,
-      3
-    ]
-  ]
-}
+		"mixed_array": [
+			"string",
+			123,
+			45.67,
+			true,
+			false,
+			null,
+			{"nested": "object"},
+			[1, 2, 3]
+		],
+		"complex": [
+			{"type": "user", "id": 1},
+			{"type": "post", "id": 100},
+			[1, 2, 3],
+			"string",
+			null
+		]
+	}

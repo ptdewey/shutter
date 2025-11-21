@@ -6,8 +6,8 @@ func_name:
 version: 0.1.0
 ---
 {
-  "age": 30,
-  "email": "john@example.com",
-  "name": "John Doe",
-  "verified": true
-}
+		"name": "John Doe",
+		"email": "john@example.com",
+		"age": 30,
+		"verified": true
+	}

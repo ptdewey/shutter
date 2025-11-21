@@ -6,14 +6,14 @@ func_name:
 version: 0.1.0
 ---
 {
-  "empty_array": [],
-  "empty_object": {},
-  "empty_string": "",
-  "false_value": false,
-  "nested": {
-    "also_empty": {},
-    "empty": []
-  },
-  "null_value": null,
-  "zero": 0
-}
+		"empty_array": [],
+		"empty_object": {},
+		"empty_string": "",
+		"zero": 0,
+		"false_value": false,
+		"null_value": null,
+		"nested": {
+			"empty": [],
+			"also_empty": {}
+		}
+	}

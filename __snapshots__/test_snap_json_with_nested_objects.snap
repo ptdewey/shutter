@@ -6,22 +6,18 @@ func_name:
 version: 0.1.0
 ---
 {
-  "created_at": "2023-06-15T10:30:00Z",
-  "user": {
-    "id": 42,
-    "permissions": [
-      "read",
-      "write",
-      "admin"
-    ],
-    "profile": {
-      "avatar": "https://example.com/avatar.jpg",
-      "settings": {
-        "language": "en",
-        "notifications": true,
-        "theme": "dark"
-      },
-      "username": "jane_smith"
-    }
-  }
-}
+		"user": {
+			"id": 42,
+			"profile": {
+				"username": "jane_smith",
+				"avatar": "https://example.com/avatar.jpg",
+				"settings": {
+					"theme": "dark",
+					"notifications": true,
+					"language": "en"
+				}
+			},
+			"permissions": ["read", "write", "admin"]
+		},
+		"created_at": "2023-06-15T10:30:00Z"
+	}

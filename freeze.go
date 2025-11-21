@@ -1,7 +1,6 @@
 package freeze
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/kortschak/utter"
@@ -9,6 +8,7 @@ import (
 	"github.com/ptdewey/freeze/internal/files"
 	"github.com/ptdewey/freeze/internal/pretty"
 	"github.com/ptdewey/freeze/internal/review"
+	"github.com/ptdewey/freeze/internal/transform"
 )
 
 const version = "0.1.0"
@@ -21,7 +21,18 @@ func init() {
 
 func SnapString(t testingT, title string, content string) {
 	t.Helper()
-	snap(t, title, content)
+	SnapStringWithOptions(t, title, content, nil)
+}
+
+// SnapStringWithOptions takes a string and applies scrubbers before snapshotting.
+func SnapStringWithOptions(t testingT, title string, content string, opts []SnapshotOption) {
+	t.Helper()
+	config := newSnapshotConfig(opts)
+
+	// Apply scrubbers to the content
+	scrubbedContent := transform.ApplyScrubbers(content, adaptScrubbers(config.Scrubbers))
+
+	snap(t, title, scrubbedContent)
 }
 
 // SnapJSON takes a JSON string, validates it, and pretty-prints it with
@@ -29,27 +40,48 @@ func SnapString(t testingT, title string, content string) {
 // format while ensuring valid JSON structure.
 func SnapJSON(t testingT, title string, jsonStr string) {
 	t.Helper()
+	SnapJSONWithOptions(t, title, jsonStr, nil)
+}
 
-	var data interface{}
-	if err := json.Unmarshal([]byte(jsonStr), &data); err != nil {
-		t.Error("failed to unmarshal JSON:", err)
-		return
+// SnapJSONWithOptions takes a JSON string and applies scrubbers and ignore patterns
+// before snapshotting. This allows filtering sensitive data and normalizing dynamic values.
+func SnapJSONWithOptions(t testingT, title string, jsonStr string, opts []SnapshotOption) {
+	t.Helper()
+
+	config := newSnapshotConfig(opts)
+
+	// Transform the JSON with ignore patterns and scrubbers
+	transformConfig := &transform.Config{
+		Scrubbers: adaptScrubbers(config.Scrubbers),
+		Ignore:    adaptIgnorePatterns(config.Ignore),
 	}
 
-	// Pretty-print the JSON with consistent indentation
-	prettyJSON, err := json.MarshalIndent(data, "", "  ")
+	transformedJSON, err := transform.TransformJSON(jsonStr, transformConfig)
 	if err != nil {
-		t.Error("failed to marshal JSON:", err)
+		t.Error("failed to transform JSON:", err)
 		return
 	}
 
-	snap(t, title, string(prettyJSON))
+	snap(t, title, transformedJSON)
 }
 
 func Snap(t testingT, title string, values ...any) {
 	t.Helper()
+	SnapWithOptions(t, title, nil, values...)
+}
+
+// SnapWithOptions takes any values, formats them, and applies scrubbers before snapshotting.
+// For structured data (maps, slices, structs), scrubbers are applied to the formatted output.
+func SnapWithOptions(t testingT, title string, opts []SnapshotOption, values ...any) {
+	t.Helper()
+	config := newSnapshotConfig(opts)
+
 	content := formatValues(values...)
-	snap(t, title, content)
+
+	// Apply scrubbers to the formatted content
+	scrubbedContent := transform.ApplyScrubbers(content, adaptScrubbers(config.Scrubbers))
+
+	snap(t, title, scrubbedContent)
 }
 
 func snap(t testingT, title string, content string) {
@@ -141,4 +173,38 @@ type testingT interface {
 	Error(...any)
 	Log(...any)
 	Cleanup(func())
+}
+
+// Adapter types to bridge freeze package types with transform package types
+
+type scrubberAdapter struct {
+	scrubber Scrubber
+}
+
+func (s *scrubberAdapter) Scrub(content string) string {
+	return s.scrubber.Scrub(content)
+}
+
+func adaptScrubbers(scrubbers []Scrubber) []transform.Scrubber {
+	result := make([]transform.Scrubber, len(scrubbers))
+	for i, s := range scrubbers {
+		result[i] = &scrubberAdapter{scrubber: s}
+	}
+	return result
+}
+
+type ignorePatternAdapter struct {
+	pattern IgnorePattern
+}
+
+func (i *ignorePatternAdapter) ShouldIgnore(key, value string) bool {
+	return i.pattern.ShouldIgnore(key, value)
+}
+
+func adaptIgnorePatterns(patterns []IgnorePattern) []transform.IgnorePattern {
+	result := make([]transform.IgnorePattern, len(patterns))
+	for i, p := range patterns {
+		result[i] = &ignorePatternAdapter{pattern: p}
+	}
+	return result
 }

@@ -1,0 +1,11 @@
+---
+title: Scrubbed JWTs
+test_name: TestScrubJWTs
+file_path: 
+func_name: 
+version: 0.1.0
+---
+{
+  "refresh_token": "<JWT>",
+  "token": "<JWT>"
+}

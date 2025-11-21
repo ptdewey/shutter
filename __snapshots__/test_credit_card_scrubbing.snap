@@ -1,0 +1,13 @@
+---
+title: Scrubbed Credit Cards
+test_name: TestCreditCardScrubbing
+file_path: 
+func_name: 
+version: 0.1.0
+---
+{
+  "another_card": "<CREDIT_CARD>",
+  "backup_card": "<CREDIT_CARD>",
+  "card_number": "<CREDIT_CARD>",
+  "name": "John Doe"
+}

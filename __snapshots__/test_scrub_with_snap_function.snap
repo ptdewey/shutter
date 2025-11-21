@@ -1,0 +1,13 @@
+---
+title: Scrub With Snap
+test_name: TestScrubWithSnapFunction
+file_path: 
+func_name: 
+version: 0.1.0
+---
+map[string]interface{}{
+ "created_at": "<TIMESTAMP>",
+ "email": "<EMAIL>",
+ "name": "John Doe",
+ "user_id": "<UUID>",
+}

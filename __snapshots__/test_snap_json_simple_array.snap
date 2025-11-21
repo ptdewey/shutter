@@ -6,8 +6,8 @@ func_name:
 version: 0.1.0
 ---
 [
-  "apple",
-  "banana",
-  "orange",
-  "grape"
-]
+		"apple",
+		"banana",
+		"orange",
+		"grape"
+	]
