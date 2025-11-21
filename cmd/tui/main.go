@@ -27,7 +27,7 @@ var (
 	helpStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color("241")).
 			Background(lipgloss.Color("236")).
-			Padding(0, 1)
+			Padding(0, 0)
 
 	statusBarStyle = lipgloss.NewStyle().
 			Background(lipgloss.Color("236")).
@@ -153,7 +153,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.width = msg.Width
 		m.height = msg.Height
 
-		headerHeight := 3
+		headerHeight := 1
 		footerHeight := 1
 		verticalMarginHeight := headerHeight + footerHeight
 
@@ -345,24 +345,21 @@ func (m model) View() string {
 	headerStyled := statusBarStyle.Width(m.width).Render(header)
 
 	// Footer with scroll info only
+	// TODO: maybe add snapshot file name to footer?
 	scrollInfo := fmt.Sprintf("%3.f%%", m.viewport.ScrollPercent()*100)
 	scrollStyled := helpStyle.Render(scrollInfo)
 
 	// Create footer with just scroll info on the right
-	footer := lipgloss.JoinHorizontal(lipgloss.Left,
+	footer := lipgloss.JoinHorizontal(lipgloss.Bottom,
 		strings.Repeat(" ", max(m.width-lipgloss.Width(scrollStyled)-1, 0)),
 		scrollStyled,
 	)
 	footerStyled := statusBarStyle.Width(m.width).Render(footer)
 
 	// Viewport content
+	// TODO: it would be nice if we could show the input on the right side?
+	// - (probably optionally, with a keybind -- hidden by default)
 	viewportContent := m.viewport.View()
-
-	// Calculate how much vertical space we have
-	// Total height = terminal height
-	// Used by header = ~1 line (the rendered header)
-	// Used by footer = ~1 line
-	// Middle = viewport (takes remaining space)
 
 	return lipgloss.JoinVertical(
 		lipgloss.Left,

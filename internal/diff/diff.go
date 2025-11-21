@@ -1,7 +1,7 @@
 package diff
 
 /*
-This file was sourced from github.com/gkampitakis/go-snaps, available with the following License
+This file was sourced from github.com/gkampitakis/go-snaps, available with the following License:
 
 MIT License
 
