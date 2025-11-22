@@ -47,16 +47,16 @@ func Review() error {
 func reviewLoop(snapshots []string) error {
 	reader := bufio.NewReader(os.Stdin)
 
-	for i, testName := range snapshots {
-		fmt.Printf("\n[%d/%d] %s\n", i+1, len(snapshots), pretty.Header(testName))
+	for i, snapTitle := range snapshots {
+		fmt.Printf("\n[%d/%d] %s\n", i+1, len(snapshots), pretty.Header(snapTitle))
 
-		newSnap, err := files.ReadSnapshot(testName, "new")
+		newSnap, err := files.ReadSnapshot(snapTitle, "new")
 		if err != nil {
 			fmt.Println(pretty.Error("✗ Failed to read new snapshot: " + err.Error()))
 			continue
 		}
 
-		accepted, acceptErr := files.ReadSnapshot(testName, "accepted")
+		accepted, acceptErr := files.ReadSnapshot(snapTitle, "accepted")
 
 		if acceptErr == nil {
 			diffLines := computeDiffLines(accepted, newSnap)
@@ -73,13 +73,13 @@ func reviewLoop(snapshots []string) error {
 
 			switch choice {
 			case Accept:
-				if err := files.AcceptSnapshot(testName); err != nil {
+				if err := files.AcceptSnapshot(snapTitle); err != nil {
 					fmt.Println(pretty.Error("✗ Failed to accept snapshot: " + err.Error()))
 				} else {
 					fmt.Println(pretty.Success("✓ Snapshot accepted"))
 				}
 			case Reject:
-				if err := files.RejectSnapshot(testName); err != nil {
+				if err := files.RejectSnapshot(snapTitle); err != nil {
 					fmt.Println(pretty.Error("✗ Failed to reject snapshot: " + err.Error()))
 				} else {
 					fmt.Println(pretty.Warning("⊘ Snapshot rejected"))

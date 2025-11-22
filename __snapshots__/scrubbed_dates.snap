@@ -1,0 +1,12 @@
+---
+title: Scrubbed Dates
+test_name: TestIndividualScrubbers/dates
+file_name: scrubbers_test.go
+version: 0.1.0
+---
+{
+  "birth_date": "<DATE>",
+  "hire_date": "<DATE>",
+  "name": "John Doe",
+  "us_format": "<DATE>"
+}

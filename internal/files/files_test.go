@@ -13,13 +13,13 @@ func TestSnapshotFileName(t *testing.T) {
 		input    string
 		expected string
 	}{
-		{"TestMyFunction", "test_my_function"},
+		{"Test My Function", "test_my_function"},
 		{"test_another_one", "test_another_one"},
-		{"TestCamelCase", "test_camel_case"},
-		{"TestWithNumbers123", "test_with_numbers123"},
-		{"TestABC", "test_a_b_c"},
+		{"Test Camel Case", "test_camel_case"},
+		{"Test With Numbers123", "test_with_numbers123"},
+		{"Test ABC", "test_abc"},
 		{"test", "test"},
-		{"TEST", "t_e_s_t"},
+		{"TEST", "test"},
 	}
 
 	for _, tt := range tests {
@@ -187,7 +187,7 @@ func TestAcceptSnapshot(t *testing.T) {
 		t.Fatalf("SaveSnapshot failed: %v", err)
 	}
 
-	if err := files.AcceptSnapshot("TestAccept"); err != nil {
+	if err := files.AcceptSnapshot("Accept Title"); err != nil {
 		t.Fatalf("AcceptSnapshot failed: %v", err)
 	}
 
@@ -219,11 +219,11 @@ func TestRejectSnapshot(t *testing.T) {
 		t.Fatalf("SaveSnapshot failed: %v", err)
 	}
 
-	if err := files.RejectSnapshot("TestReject"); err != nil {
+	if err := files.RejectSnapshot("Reject Title"); err != nil {
 		t.Fatalf("RejectSnapshot failed: %v", err)
 	}
 
-	_, err := files.ReadSnapshot("TestReject", "new")
+	_, err := files.ReadSnapshot("Reject Title", "new")
 	if err == nil {
 		t.Error("expected error: .new file should be deleted after reject")
 	}

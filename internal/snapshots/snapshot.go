@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/kortschak/utter"
 	"github.com/ptdewey/shutter/internal/diff"
 	"github.com/ptdewey/shutter/internal/files"
 	"github.com/ptdewey/shutter/internal/pretty"
@@ -56,7 +55,7 @@ func SnapWithTitle(t T, title, testName, fileName, version, content string) {
 		Version:  version,
 	}
 
-	accepted, err := files.ReadAccepted(testName)
+	accepted, err := files.ReadAccepted(title)
 	if err == nil {
 		if accepted.Content == content {
 			return
@@ -80,16 +79,4 @@ func SnapWithTitle(t T, title, testName, fileName, version, content string) {
 
 	fmt.Println(pretty.NewSnapshotBox(snapshot))
 	t.Error("new snapshot created - run 'shutter review' to accept")
-}
-
-func FormatValues(values ...any) string {
-	var result string
-	for _, v := range values {
-		result += FormatValue(v)
-	}
-	return result
-}
-
-func FormatValue(v any) string {
-	return utter.Sdump(v)
 }

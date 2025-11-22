@@ -1,4 +1,4 @@
-# shutter
+# Shutter
 
 A [birdie](https://github.com/giacomocavalieri/birdie) and [insta](https://github.com/mitsuhiko/insta) inspired snapshot testing library for Go.
 
@@ -25,6 +25,20 @@ func TestSomething(t *testing.T) {
 }
 ```
 
+### Snapshotting Multiple Values
+
+Use `SnapMany()` when you need to snapshot multiple related values together:
+
+```go
+func TestMultipleValues(t *testing.T) {
+    request := buildRequest()
+    response := handleRequest(request)
+
+    // Snapshot both request and response together
+    shutter.SnapMany(t, "request and response", []any{request, response})
+}
+```
+
 ### Advanced Usage: Scrubbers and Ignore Patterns
 
 shutter supports data scrubbing and field filtering to handle dynamic or sensitive data in snapshots.
@@ -39,35 +53,35 @@ func TestUserAPI(t *testing.T) {
 
     // Replace UUIDs and timestamps with placeholders
     shutter.Snap(t, "user", user,
-        shutter.ScrubUUIDs(),
-        shutter.ScrubTimestamps(),
+        shutter.ScrubUUID(),
+        shutter.ScrubTimestamp(),
     )
 }
 ```
 
 **Built-in Scrubbers:**
 
-- `ScrubUUIDs()` - Replaces UUIDs with `<UUID>`
-- `ScrubTimestamps()` - Replaces ISO8601 timestamps with `<TIMESTAMP>`
-- `ScrubEmails()` - Replaces email addresses with `<EMAIL>`
-- `ScrubIPAddresses()` - Replaces IPv4 addresses with `<IP>`
-- `ScrubJWTs()` - Replaces JWT tokens with `<JWT>`
-- `ScrubCreditCards()` - Replaces credit card numbers with `<CREDIT_CARD>`
-- `ScrubAPIKeys()` - Replaces API keys with `<API_KEY>`
-- `ScrubDates()` - Replaces various date formats with `<DATE>`
-- `ScrubUnixTimestamps()` - Replaces Unix timestamps with `<UNIX_TS>`
+- `ScrubUUID()` - Replaces UUIDs with `<UUID>`
+- `ScrubTimestamp()` - Replaces ISO8601 timestamps with `<TIMESTAMP>`
+- `ScrubEmail()` - Replaces email addresses with `<EMAIL>`
+- `ScrubIP()` - Replaces IPv4 addresses with `<IP>`
+- `ScrubJWT()` - Replaces JWT tokens with `<JWT>`
+- `ScrubCreditCard()` - Replaces credit card numbers with `<CREDIT_CARD>`
+- `ScrubAPIKey()` - Replaces API keys with `<API_KEY>`
+- `ScrubDate()` - Replaces various date formats with `<DATE>`
+- `ScrubUnixTimestamp()` - Replaces Unix timestamps with `<UNIX_TS>`
 
 **Custom Scrubbers:**
 
 ```go
 // Using regex patterns
-shutter.RegexScrubber(`user-\d+`, "<USER_ID>")
+shutter.ScrubRegex(`user-\d+`, "<USER_ID>")
 
 // Using exact string matching
-shutter.ExactMatchScrubber("secret_value", "<REDACTED>")
+shutter.ScrubExact("secret_value", "<REDACTED>")
 
 // Using custom functions
-shutter.CustomScrubber(func(content string) string {
+shutter.ScrubWith(func(content string) string {
     return strings.ReplaceAll(content, "localhost", "<HOST>")
 })
 ```
@@ -79,39 +93,40 @@ Ignore patterns remove specific fields from JSON structures before snapshotting:
 ```go
 func TestAPIResponse(t *testing.T) {
     response := api.GetData()
+    jsonBytes, _ := json.Marshal(response)
 
     // Ignore sensitive fields and null values
-    shutter.SnapJSON(t, "response", response,
-        shutter.IgnoreSensitiveKeys(),
-        shutter.IgnoreNullValues(),
-        shutter.IgnoreKeys("created_at", "updated_at"),
+    shutter.SnapJSON(t, "response", string(jsonBytes),
+        shutter.IgnoreSensitive(),
+        shutter.IgnoreNull(),
+        shutter.IgnoreKey("created_at", "updated_at"),
     )
 }
 ```
 
 **Built-in Ignore Patterns:**
 
-- `IgnoreSensitiveKeys()` - Ignores common sensitive keys (password, token, api_key, etc.)
-- `IgnoreEmptyValues()` - Ignores fields with empty string values
-- `IgnoreNullValues()` - Ignores fields with null values
+- `IgnoreSensitive()` - Ignores common sensitive keys (password, token, api_key, etc.)
+- `IgnoreEmpty()` - Ignores fields with empty string values
+- `IgnoreNull()` - Ignores fields with null values
 
 **Custom Ignore Patterns:**
 
 ```go
 // Ignore specific keys
-shutter.IgnoreKeys("id", "timestamp", "version")
+shutter.IgnoreKey("id", "timestamp", "version")
 
 // Ignore key-value pairs
 shutter.IgnoreKeyValue("status", "pending")
 
 // Ignore keys matching a regex pattern
-shutter.IgnoreKeysMatching(`^_.*`) // Ignore all keys starting with underscore
+shutter.IgnoreKeyMatching(`^_.*`) // Ignore all keys starting with underscore
 
 // Ignore specific values
-shutter.IgnoreValues("null", "undefined", "")
+shutter.IgnoreValue("null", "undefined", "")
 
 // Using custom functions
-shutter.CustomIgnore(func(key, value string) bool {
+shutter.IgnoreWith(func(key, value string) bool {
     return strings.HasPrefix(key, "temp_")
 })
 ```
@@ -123,30 +138,36 @@ You can combine multiple scrubbers and ignore patterns:
 ```go
 func TestComplexData(t *testing.T) {
     data := generateTestData()
+    jsonBytes, _ := json.Marshal(data)
 
-    shutter.Snap(t, "data", data,
-        // Scrubbers
-        shutter.ScrubUUIDs(),
-        shutter.ScrubTimestamps(),
-        shutter.ScrubEmails(),
+    shutter.SnapJSON(t, "data", string(jsonBytes),
+        // First, remove unwanted fields
+        shutter.IgnoreSensitive(),
+        shutter.IgnoreKey("debug_info"),
+        shutter.IgnoreNull(),
 
-        // Ignore patterns
-        shutter.IgnoreSensitiveKeys(),
-        shutter.IgnoreKeys("debug_info"),
-        shutter.IgnoreNullValues(),
+        // Then, scrub dynamic values in remaining fields
+        shutter.ScrubUUID(),
+        shutter.ScrubTimestamp(),
+        shutter.ScrubEmail(),
     )
 }
 ```
 
+**Note:** Ignore patterns only work with `SnapJSON()`. Use scrubbers with `Snap()`, `SnapMany()`, or `SnapString()`.
+
 #### API Reference
 
-All snapshot functions support options as variadic parameters:
+**Snapshot Functions:**
 
 ```go
-// For general values (structs, maps, slices, etc.)
+// For single values (structs, maps, slices, etc.)
 shutter.Snap(t, "title", value, options...)
 
-// For JSON strings
+// For multiple related values
+shutter.SnapMany(t, "title", []any{value1, value2, value3}, options...)
+
+// For JSON strings (supports both scrubbers and ignore patterns)
 shutter.SnapJSON(t, "title", jsonString, options...)
 
 // For plain strings
@@ -161,7 +182,7 @@ To review a set of snapshots, run:
 go run github.com/ptdewey/shutter/cmd/shutter review
 ```
 
-shutter can also be used programmatically:
+Shutter can also be used programmatically:
 
 ```go
 // Example: tools/shutter/main.go
@@ -181,7 +202,7 @@ Which can then be run with:
 go run tools/shutter/main.go
 ```
 
-shutter also includes (in a separate Go module) a [Bubbletea](https://github.com/charmbracelet/bubbletea) TUI in [cmd/tui/main.go](./cmd/tui/main.go).
+Shutter also includes (in a separate Go module) a [Bubbletea](https://github.com/charmbracelet/bubbletea) TUI in [cmd/tui/main.go](./cmd/tui/main.go).
 (The TUI is shipped in a separate module to make the added dependencies optional)
 
 ### TUI Usage
@@ -209,10 +230,6 @@ go run github.com/ptdewey/shutter/cmd/tui accept-all
 # Reject all new snapshots without review
 go run github.com/ptdewey/shutter/cmd/tui reject-all
 ```
-
-## Disclaimer
-
-- This package was largely vibe coded, your mileage may vary (but this library provides more of what I want than the ones below).
 
 ## Other Libraries
 

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 )
 
@@ -75,24 +74,14 @@ func getSnapshotDir() (string, error) {
 	return snapshotDir, nil
 }
 
-func SnapshotFileName(testName string) string {
-	var result strings.Builder
-	for i, r := range testName {
-		if i > 0 && r >= 'A' && r <= 'Z' {
-			result.WriteRune('_')
-		}
-		result.WriteRune(r)
-	}
-	s := result.String()
-	s = strings.ToLower(s)
-	s = regexp.MustCompile(`[^a-z0-9]+`).ReplaceAllString(s, "_")
-	s = strings.Trim(s, "_")
-	return s
+// TODO: make this use the snapshot title rather than the test name
+func SnapshotFileName(snapTitle string) string {
+	return strings.ReplaceAll(strings.ToLower(snapTitle), " ", "_")
 }
 
 // getSnapshotFileName returns the filename for a snapshot based on test name and state
-func getSnapshotFileName(testName string, state string) string {
-	baseName := SnapshotFileName(testName)
+func getSnapshotFileName(snapTitle string, state string) string {
+	baseName := SnapshotFileName(snapTitle)
 	switch state {
 	case "accepted":
 		return baseName + ".snap"
@@ -109,19 +98,19 @@ func SaveSnapshot(snap *Snapshot, state string) error {
 		return err
 	}
 
-	fileName := getSnapshotFileName(snap.Test, state)
+	fileName := getSnapshotFileName(snap.Title, state)
 	filePath := filepath.Join(snapshotDir, fileName)
 
 	return os.WriteFile(filePath, []byte(snap.Serialize()), 0644)
 }
 
-func ReadSnapshot(testName string, state string) (*Snapshot, error) {
+func ReadSnapshot(snapTitle string, state string) (*Snapshot, error) {
 	snapshotDir, err := getSnapshotDir()
 	if err != nil {
 		return nil, err
 	}
 
-	fileName := getSnapshotFileName(testName, state)
+	fileName := getSnapshotFileName(snapTitle, state)
 	filePath := filepath.Join(snapshotDir, fileName)
 
 	data, err := os.ReadFile(filePath)
@@ -132,12 +121,12 @@ func ReadSnapshot(testName string, state string) (*Snapshot, error) {
 	return Deserialize(string(data))
 }
 
-func ReadAccepted(testName string) (*Snapshot, error) {
-	return ReadSnapshot(testName, "snap")
+func ReadAccepted(snapTitle string) (*Snapshot, error) {
+	return ReadSnapshot(snapTitle, "snap")
 }
 
-func ReadNew(testName string) (*Snapshot, error) {
-	return ReadSnapshot(testName, "new")
+func ReadNew(snapTitle string) (*Snapshot, error) {
+	return ReadSnapshot(snapTitle, "new")
 }
 
 func ListNewSnapshots() ([]string, error) {
@@ -162,13 +151,13 @@ func ListNewSnapshots() ([]string, error) {
 	return newSnapshots, nil
 }
 
-func AcceptSnapshot(testName string) error {
+func AcceptSnapshot(snapTitle string) error {
 	snapshotDir, err := getSnapshotDir()
 	if err != nil {
 		return err
 	}
 
-	fileName := SnapshotFileName(testName)
+	fileName := SnapshotFileName(snapTitle)
 	newPath := filepath.Join(snapshotDir, fileName+".snap.new")
 	acceptedPath := filepath.Join(snapshotDir, fileName+".snap")
 
@@ -184,13 +173,13 @@ func AcceptSnapshot(testName string) error {
 	return os.Remove(newPath)
 }
 
-func RejectSnapshot(testName string) error {
+func RejectSnapshot(snapTitle string) error {
 	snapshotDir, err := getSnapshotDir()
 	if err != nil {
 		return err
 	}
 
-	fileName := SnapshotFileName(testName) + ".snap.new"
+	fileName := SnapshotFileName(snapTitle) + ".snap.new"
 	filePath := filepath.Join(snapshotDir, fileName)
 
 	return os.Remove(filePath)
