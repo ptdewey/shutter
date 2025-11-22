@@ -17,43 +17,43 @@ import (
 var (
 	titleStyle = lipgloss.NewStyle().
 			Bold(true).
-			Foreground(lipgloss.Color("205")).
+			Foreground(lipgloss.AdaptiveColor{Light: "5", Dark: "5"}). // Magenta
 			Padding(0, 1)
 
 	counterStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("240")).
+			Foreground(lipgloss.AdaptiveColor{Light: "8", Dark: "8"}). // Bright black/gray
 			Padding(0, 1)
 
 	helpStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("241")).
-			Background(lipgloss.Color("236")).
+			Foreground(lipgloss.AdaptiveColor{Light: "8", Dark: "8"}).
+			Background(lipgloss.AdaptiveColor{Light: "0", Dark: "0"}).
 			Padding(0, 0)
 
 	statusBarStyle = lipgloss.NewStyle().
-			Background(lipgloss.Color("236")).
-			Foreground(lipgloss.Color("230"))
+			Background(lipgloss.AdaptiveColor{Light: "0", Dark: "0"}).
+			Foreground(lipgloss.AdaptiveColor{Light: "7", Dark: "7"})
 
 	contentStyle = lipgloss.NewStyle().
 			Padding(1, 2)
 
 	// Action styles with semantic colors
 	acceptStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("10")). // Green
+			Foreground(lipgloss.AdaptiveColor{Light: "2", Dark: "2"}). // Green
 			Bold(true)
 
 	rejectStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("9")). // Red
+			Foreground(lipgloss.AdaptiveColor{Light: "1", Dark: "1"}). // Red
 			Bold(true)
 
 	skipStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("11")). // Yellow
+			Foreground(lipgloss.AdaptiveColor{Light: "3", Dark: "3"}). // Yellow
 			Bold(true)
 
 	keyStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("241"))
+			Foreground(lipgloss.AdaptiveColor{Light: "8", Dark: "8"})
 
 	helpTextStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("240"))
+			Foreground(lipgloss.AdaptiveColor{Light: "8", Dark: "8"})
 )
 
 type model struct {
@@ -344,14 +344,20 @@ func (m model) View() string {
 	)
 	headerStyled := statusBarStyle.Width(m.width).Render(header)
 
-	// Footer with scroll info only
-	// TODO: maybe add snapshot file name to footer?
+	// Footer with snapshot filename and scroll info
+	snapshotFile := files.SnapshotFileName(m.snapshots[m.current]) + ".snap.new"
+	fileInfo := helpStyle.Render(snapshotFile)
 	scrollInfo := fmt.Sprintf("%3.f%%", m.viewport.ScrollPercent()*100)
 	scrollStyled := helpStyle.Render(scrollInfo)
 
-	// Create footer with just scroll info on the right
+	// Calculate spacing between filename and scroll percentage
+	totalFooterWidth := lipgloss.Width(fileInfo) + lipgloss.Width(scrollStyled)
+	spacing := max(m.width-totalFooterWidth-2, 1)
+
+	// Create footer with filename on left and scroll info on right
 	footer := lipgloss.JoinHorizontal(lipgloss.Bottom,
-		strings.Repeat(" ", max(m.width-lipgloss.Width(scrollStyled)-1, 0)),
+		fileInfo,
+		strings.Repeat(" ", spacing),
 		scrollStyled,
 	)
 	footerStyled := statusBarStyle.Width(m.width).Render(footer)
@@ -374,6 +380,38 @@ func max(a, b int) int {
 		return a
 	}
 	return b
+}
+
+func acceptAll() error {
+	snapshots, err := files.ListNewSnapshots()
+	if err != nil {
+		return err
+	}
+
+	for _, testName := range snapshots {
+		if err := files.AcceptSnapshot(testName); err != nil {
+			return err
+		}
+	}
+
+	fmt.Printf(pretty.Success("✓ Accepted %d snapshot(s)\n"), len(snapshots))
+	return nil
+}
+
+func rejectAll() error {
+	snapshots, err := files.ListNewSnapshots()
+	if err != nil {
+		return err
+	}
+
+	for _, testName := range snapshots {
+		if err := files.RejectSnapshot(testName); err != nil {
+			return err
+		}
+	}
+
+	fmt.Printf(pretty.Warning("⊘ Rejected %d snapshot(s)\n"), len(snapshots))
+	return nil
 }
 
 func main() {
@@ -432,36 +470,4 @@ Interactive Controls:
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
-}
-
-func acceptAll() error {
-	snapshots, err := files.ListNewSnapshots()
-	if err != nil {
-		return err
-	}
-
-	for _, testName := range snapshots {
-		if err := files.AcceptSnapshot(testName); err != nil {
-			return err
-		}
-	}
-
-	fmt.Printf(pretty.Success("✓ Accepted %d snapshot(s)\n"), len(snapshots))
-	return nil
-}
-
-func rejectAll() error {
-	snapshots, err := files.ListNewSnapshots()
-	if err != nil {
-		return err
-	}
-
-	for _, testName := range snapshots {
-		if err := files.RejectSnapshot(testName); err != nil {
-			return err
-		}
-	}
-
-	fmt.Printf(pretty.Warning("⊘ Rejected %d snapshot(s)\n"), len(snapshots))
-	return nil
 }

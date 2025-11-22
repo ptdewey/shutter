@@ -7,11 +7,11 @@ import (
 )
 
 const (
-	colorRed    = "\033[31m"
-	colorGreen  = "\033[32m"
-	colorYellow = "\033[33m"
-	colorBlue   = "\033[34m"
-	colorGray   = "\033[90m"
+	colorRed    = "\033[91m" // Bright red (ANSI color 9)
+	colorGreen  = "\033[92m" // Bright green (ANSI color 10)
+	colorYellow = "\033[93m" // Bright yellow (ANSI color 11)
+	colorBlue   = "\033[94m" // Bright blue (ANSI color 12)
+	colorGray   = "\033[90m" // Bright black/gray (ANSI color 8)
 	colorReset  = "\033[0m"
 	colorBold   = "\033[1m"
 )
