@@ -18,7 +18,7 @@ func DiffSnapshotBox(old, newSnapshot *files.Snapshot, diffLines []diff.DiffLine
 	snapshotFileName := files.SnapshotFileName(newSnapshot.Test) + ".snap"
 
 	var sb strings.Builder
-	sb.WriteString("─── " + "Review Snapshot " + strings.Repeat("─", width-20) + "\n\n")
+	sb.WriteString("─── " + "Snapshot Diff " + strings.Repeat("─", width-15) + "\n\n")
 
 	// TODO: maybe make helper functions for this, swap coloring between the key and the value
 	// TODO: maybe show the snapshot file name in gray next to the "a/r/s" options
@@ -29,10 +29,13 @@ func DiffSnapshotBox(old, newSnapshot *files.Snapshot, diffLines []diff.DiffLine
 	sb.WriteString(Blue("  test: ") + newSnapshot.Test + "\n")
 	sb.WriteString(Blue("  file: ") + snapshotFileName + "\n")
 	sb.WriteString("\n")
-	sb.WriteString(strings.Repeat("─", width) + "\n")
+	// sb.WriteString(Red("  - old snapshot\n"))
+	// sb.WriteString(Green("  + new snapshot\n"))
+	// sb.WriteString("\n")
 
 	// Calculate max line numbers for proper spacing
-	maxOldNum, maxNewNum := 0, 0
+	maxOldNum := 0
+	maxNewNum := 0
 	for _, dl := range diffLines {
 		if dl.OldNumber > maxOldNum {
 			maxOldNum = dl.OldNumber
@@ -41,45 +44,67 @@ func DiffSnapshotBox(old, newSnapshot *files.Snapshot, diffLines []diff.DiffLine
 			maxNewNum = dl.NewNumber
 		}
 	}
-	oldWidth := len(fmt.Sprintf("%d", maxOldNum))
-	newWidth := len(fmt.Sprintf("%d", maxNewNum))
+	// Use the larger of the two for consistent column width
+	maxLineNum := maxOldNum
+	if maxNewNum > maxLineNum {
+		maxLineNum = maxNewNum
+	}
+	lineNumWidth := len(fmt.Sprintf("%d", maxLineNum))
+
+	// Top bar with corner (account for both line number columns)
+	topBar := strings.Repeat("─", (lineNumWidth*2)+4) + "┬" +
+		strings.Repeat("─", width-(lineNumWidth*2)-1) + "\n"
+	sb.WriteString(topBar)
 
 	for _, dl := range diffLines {
-		var oldNumStr, newNumStr string
-		var prefix string
-		var formatted string
+		var leftNum, rightNum, prefix, formatted string
 
+		// FIX: line number coloring is the same between old and new lines
 		switch dl.Kind {
 		case diff.DiffOld:
-			oldNumStr = fmt.Sprintf("%*d", oldWidth, dl.OldNumber)
-			newNumStr = strings.Repeat(" ", newWidth)
-			prefix = Red("−")
+			// For removed lines: show old line number on left, space on right, red -
+			leftNum = Red(fmt.Sprintf("%*d", lineNumWidth, dl.OldNumber))
+			rightNum = strings.Repeat(" ", lineNumWidth)
+			prefix = Red("-")
 			formatted = Red(dl.Line)
 		case diff.DiffNew:
-			oldNumStr = strings.Repeat(" ", oldWidth)
-			newNumStr = fmt.Sprintf("%*d", newWidth, dl.NewNumber)
+			// For added lines: space on left, new line number on right, green +
+			leftNum = strings.Repeat(" ", lineNumWidth)
+			rightNum = Green(fmt.Sprintf("%*d", lineNumWidth, dl.NewNumber))
 			prefix = Green("+")
 			formatted = Green(dl.Line)
 		case diff.DiffShared:
-			oldNumStr = fmt.Sprintf("%*d", oldWidth, dl.OldNumber)
-			newNumStr = fmt.Sprintf("%*d", newWidth, dl.NewNumber)
-			prefix = " "
+			// For shared lines: show line number centered, │ separator (not gray)
+			leftNum = strings.Repeat(" ", lineNumWidth)
+			rightNum = Gray(fmt.Sprintf("%*d", lineNumWidth, dl.NewNumber))
+			prefix = "│"
 			formatted = dl.Line
 		}
 
-		linePrefix := fmt.Sprintf("%s %s %s", Gray(oldNumStr), Gray(newNumStr), prefix)
-		display := fmt.Sprintf("%s %s", linePrefix, formatted)
-
 		// Adjust for actual display length considering ANSI codes
-		if len(dl.Line) > width-oldWidth-newWidth-8 {
-			formatted = formatted[:width-oldWidth-newWidth-11] + "..."
-			display = fmt.Sprintf("%s %s", linePrefix, formatted)
+		// Account for: 2 spaces padding + 2 line number columns + 2 spaces between + prefix + space
+		maxContentWidth := width - (lineNumWidth * 2) - 8
+		if len(dl.Line) > maxContentWidth {
+			truncated := dl.Line[:maxContentWidth-3] + "..."
+			switch dl.Kind {
+			case diff.DiffOld:
+				formatted = Red(truncated)
+			case diff.DiffNew:
+				formatted = Green(truncated)
+			case diff.DiffShared:
+				formatted = truncated
+			}
 		}
 
+		display := fmt.Sprintf("%s %s %s %s", leftNum, rightNum, prefix, formatted)
 		sb.WriteString(fmt.Sprintf("  %s\n", display))
 	}
 
-	sb.WriteString(strings.Repeat("─", width) + "\n")
+	// Bottom bar with corner (account for both line number columns)
+	bottomBar := strings.Repeat("─", (lineNumWidth*2)+4) + "┴" +
+		strings.Repeat("─", width-(lineNumWidth*2)-1) + "\n"
+	sb.WriteString(bottomBar)
+
 	return sb.String()
 }
 

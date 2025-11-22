@@ -17,11 +17,11 @@ import (
 var (
 	titleStyle = lipgloss.NewStyle().
 			Bold(true).
-			Foreground(lipgloss.AdaptiveColor{Light: "8", Dark: "8"}).
+			Foreground(lipgloss.AdaptiveColor{Light: "5", Dark: "5"}).
 			Padding(0, 1)
 
 	counterStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.AdaptiveColor{Light: "5", Dark: "5"}).
+			Foreground(lipgloss.AdaptiveColor{Light: "8", Dark: "8"}).
 			Padding(0, 1)
 
 	helpStyle = lipgloss.NewStyle().

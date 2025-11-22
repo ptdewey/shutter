@@ -1,9 +1,13 @@
 package pretty_test
 
 import (
+	"fmt"
 	"os"
+	"strings"
 	"testing"
 
+	"github.com/ptdewey/freeze/internal/diff"
+	"github.com/ptdewey/freeze/internal/files"
 	"github.com/ptdewey/freeze/internal/pretty"
 )
 
@@ -155,4 +159,106 @@ func contains(s, substr string) bool {
 		}
 	}
 	return false
+}
+
+func TestDiffSnapshotBox(t *testing.T) {
+	os.Unsetenv("NO_COLOR")
+	os.Setenv("COLUMNS", "100")
+	defer os.Unsetenv("COLUMNS")
+
+	oldContent := `line1
+line2
+line3`
+
+	newContent := `line1
+modified
+line3`
+
+	oldSnap := &files.Snapshot{
+		Title:   "Test Snapshot",
+		Test:    "TestExample",
+		Content: oldContent,
+	}
+
+	newSnap := &files.Snapshot{
+		Title:   "Test Snapshot",
+		Test:    "TestExample",
+		Content: newContent,
+	}
+
+	diffLines := diff.Histogram(oldContent, newContent)
+	result := pretty.DiffSnapshotBox(oldSnap, newSnap, diffLines)
+
+	// Check that result is not empty
+	if result == "" {
+		t.Error("DiffSnapshotBox returned empty string")
+	}
+
+	// Check for header elements
+	if !strings.Contains(result, "Snapshot Diff") {
+		t.Error("Result should contain 'Snapshot Diff' header")
+	}
+	if !strings.Contains(result, "Test Snapshot") {
+		t.Error("Result should contain title")
+	}
+	if !strings.Contains(result, "TestExample") {
+		t.Error("Result should contain test name")
+	}
+
+	// Check for diff content
+	if !strings.Contains(result, "line1") {
+		t.Error("Result should contain 'line1'")
+	}
+	if !strings.Contains(result, "modified") {
+		t.Error("Result should contain 'modified'")
+	}
+	if !strings.Contains(result, "line3") {
+		t.Error("Result should contain 'line3'")
+	}
+
+	// Print the result for visual inspection
+	t.Logf("\n%s", result)
+}
+
+func TestDiffSnapshotBoxLargeLineNumbers(t *testing.T) {
+	os.Unsetenv("NO_COLOR")
+	os.Setenv("COLUMNS", "120")
+	defer os.Unsetenv("COLUMNS")
+
+	// Create content with more than 10 lines to test multi-digit line numbers
+	oldLines := make([]string, 15)
+	newLines := make([]string, 15)
+	for i := 0; i < 15; i++ {
+		oldLines[i] = fmt.Sprintf("line %d", i+1)
+		newLines[i] = fmt.Sprintf("line %d", i+1)
+	}
+	// Modify line 10
+	oldLines[9] = "line 10 old"
+	newLines[9] = "line 10 new"
+
+	oldContent := strings.Join(oldLines, "\n")
+	newContent := strings.Join(newLines, "\n")
+
+	oldSnap := &files.Snapshot{
+		Title:   "Large Diff Test",
+		Test:    "TestLargeDiff",
+		Content: oldContent,
+	}
+
+	newSnap := &files.Snapshot{
+		Title:   "Large Diff Test",
+		Test:    "TestLargeDiff",
+		Content: newContent,
+	}
+
+	diffLines := diff.Histogram(oldContent, newContent)
+	result := pretty.DiffSnapshotBox(oldSnap, newSnap, diffLines)
+
+	// Check that result is not empty
+	if result == "" {
+		t.Error("DiffSnapshotBox returned empty string")
+	}
+
+	// Print the result for visual inspection
+	t.Logf("\n%s", result)
 }

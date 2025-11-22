@@ -258,11 +258,11 @@ func TestComplexNestedStructure(t *testing.T) {
 		CreatedAt: time.Date(2023, 1, 15, 10, 30, 0, 0, time.UTC),
 		Roles:     []string{"admin", "moderator", "user"},
 		Metadata: map[string]any{
-			"theme":         "darker",
+			"theme":         "dark",
 			"notifications": true,
-			"language":      "en-utf-8",
+			"language":      "en",
 			"preferences": map[string]any{
-				"email_frequency": "bi-weekly",
+				"email_frequency": "weekly",
 				"notifications":   true,
 			},
 		},

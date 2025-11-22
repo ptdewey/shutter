@@ -24,13 +24,13 @@ freeze_test.Post{
    "user",
   },
   Metadata: map[string]interface{}{
-   "language": "en",
+   "language": "en-utf-8",
    "notifications": true,
    "preferences": map[string]interface{}{
-    "email_frequency": "weekly",
+    "email_frequency": "bi-weekly",
     "notifications": true,
    },
-   "theme": "dark",
+   "theme": "darker",
   },
  },
  Tags: []string{
