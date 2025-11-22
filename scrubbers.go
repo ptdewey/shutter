@@ -54,13 +54,13 @@ var (
 	uuidPattern    = regexp.MustCompile(`[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}`)
 	iso8601Pattern = regexp.MustCompile(`\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?`)
 	emailPattern   = regexp.MustCompile(`[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}`)
-	// More conservative Unix timestamp pattern - requires context markers
-	// Matches timestamps with common prefixes/suffixes to avoid false positives on IDs
-	unixTsPattern = regexp.MustCompile(`(?:timestamp|time|ts|created|updated|at)["\s:=]+(\d{10,13})\b`)
+	// Unix timestamp pattern - matches 10-13 digit numbers (Unix timestamps in seconds or milliseconds)
+	// Note: This is aggressive and may match other numbers. Use with caution or customize.
+	unixTsPattern = regexp.MustCompile(`\b\d{10,13}\b`)
 	// IPv4 pattern with basic range validation (not perfect, but better)
 	ipv4Pattern = regexp.MustCompile(`\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b`)
-	// Credit card pattern - more conservative, requires context
-	creditCardPattern = regexp.MustCompile(`(?:card|cc|payment)["\s:=]+(\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4})\b`)
+	// Credit card pattern - matches 16 digit numbers with optional separators
+	creditCardPattern = regexp.MustCompile(`\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b`)
 	jwtPattern        = regexp.MustCompile(`eyJ[a-zA-Z0-9_-]*\.eyJ[a-zA-Z0-9_-]*\.[a-zA-Z0-9_-]*`)
 )
 
@@ -89,12 +89,12 @@ func ScrubEmails() SnapshotOption {
 }
 
 // ScrubUnixTimestamps replaces Unix timestamps (10-13 digits) with "<UNIX_TS>".
-// Note: This uses a conservative pattern that requires context keywords to avoid
-// false positives on IDs and other numbers. For aggressive scrubbing, use a custom regex.
+// Note: This is aggressive and may match other long numbers. For more conservative
+// scrubbing with context keywords, use a custom regex.
 func ScrubUnixTimestamps() SnapshotOption {
 	return WithScrubber(&regexScrubber{
 		pattern:     unixTsPattern,
-		replacement: "$1<UNIX_TS>",
+		replacement: "<UNIX_TS>",
 	})
 }
 
@@ -112,7 +112,7 @@ func ScrubIPAddresses() SnapshotOption {
 func ScrubCreditCards() SnapshotOption {
 	return WithScrubber(&regexScrubber{
 		pattern:     creditCardPattern,
-		replacement: "$1<CREDIT_CARD>",
+		replacement: "<CREDIT_CARD>",
 	})
 }
 

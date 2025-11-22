@@ -5,8 +5,8 @@ file_name: scrubbers_test.go
 version: 0.1.0
 ---
 {
-  "another_4532123456789010<CREDIT_CARD>",
-  "backup_4532 1234 5678 9010<CREDIT_CARD>",
-  "card_number": "4532-1234-5678-9010",
+  "another_card": "<CREDIT_CARD>",
+  "backup_card": "<CREDIT_CARD>",
+  "card_number": "<CREDIT_CARD>",
   "name": "John Doe"
 }

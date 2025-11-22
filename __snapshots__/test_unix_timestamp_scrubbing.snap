@@ -5,8 +5,8 @@ file_name: scrubbers_test.go
 version: 0.1.0
 ---
 {
-  "1699999999<UNIX_TS>,
-  "deleted": 1700000000,
+  "created": <UNIX_TS>,
+  "deleted": <UNIX_TS>,
   "name": "Test Event",
-  "1700000000000<UNIX_TS>
+  "updated": <UNIX_TS>
 }
