@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ptdewey/freeze/internal/diff"
-	"github.com/ptdewey/freeze/internal/files"
+	"github.com/ptdewey/shutter/internal/diff"
+	"github.com/ptdewey/shutter/internal/files"
 )
 
 func NewSnapshotBox(snap *files.Snapshot) string {

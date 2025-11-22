@@ -1,7 +1,16 @@
 ---
 title: SnapJSON Compact Format
 test_name: TestSnapJsonCompactFormat
-file_name: freeze_test.go
+file_name: shutter_test.go
 version: 0.1.0
 ---
-{"id":1,"name":"Product","price":99.99,"in_stock":true,"tags":["electronics","gadgets"]}
+{
+  "id": 1,
+  "in_stock": true,
+  "name": "Product",
+  "price": 99.99,
+  "tags": [
+    "electronics",
+    "gadgets"
+  ]
+}

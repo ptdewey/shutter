@@ -1,4 +1,4 @@
-package freeze_test
+package shutter_test
 
 import (
 	"encoding/json"
@@ -9,16 +9,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ptdewey/freeze"
-	"github.com/ptdewey/freeze/internal/files"
+	"github.com/ptdewey/shutter"
+	"github.com/ptdewey/shutter/internal/files"
 )
 
 func TestSnapString(t *testing.T) {
-	freeze.SnapString(t, "Simple String Test", "hello world")
+	shutter.SnapString(t, "Simple String Test", "hello world")
 }
 
 func TestSnapMultiple(t *testing.T) {
-	freeze.Snap(t, "Multiple Values Test", "value1", "value2", 42, "foo", "bar", "baz", "wibble", "wobble", "tock", nil)
+	shutter.Snap(t, "Multiple Values Test", "value1", "value2", 42, "foo", "bar", "baz", "wibble", "wobble", "tock", nil)
 }
 
 type CustomStruct struct {
@@ -35,18 +35,18 @@ func TestSnapCustomType(t *testing.T) {
 		Name: "Alice",
 		Age:  30,
 	}
-	freeze.Snap(t, "Custom Type Test", cs)
+	shutter.Snap(t, "Custom Type Test", cs)
 }
 
 func TestMap(t *testing.T) {
-	freeze.Snap(t, "Map Test", map[string]any{
+	shutter.Snap(t, "Map Test", map[string]any{
 		"foo":    "bar",
 		"wibble": "wobble",
 	})
 }
 
 func TestSerializeDeserialize(t *testing.T) {
-	snap := &freeze.Snapshot{
+	snap := &shutter.Snapshot{
 		Title:    "My Test Title",
 		Test:     "TestExample",
 		FileName: "test_file.go",
@@ -59,7 +59,7 @@ func TestSerializeDeserialize(t *testing.T) {
 		t.Errorf("expected:\n%s\ngot:\n%s", expected, serialized)
 	}
 
-	deserialized, err := freeze.Deserialize(serialized)
+	deserialized, err := shutter.Deserialize(serialized)
 	if err != nil {
 		t.Fatalf("failed to deserialize: %v", err)
 	}
@@ -79,7 +79,7 @@ func TestSerializeDeserialize(t *testing.T) {
 }
 
 func TestFileOperations(t *testing.T) {
-	snap := &freeze.Snapshot{
+	snap := &shutter.Snapshot{
 		Title:   "File Ops Title",
 		Test:    "TestFileOps",
 		Content: "file test content",
@@ -89,7 +89,7 @@ func TestFileOperations(t *testing.T) {
 		t.Fatalf("failed to save snapshot: %v", err)
 	}
 
-	read, err := freeze.ReadSnapshot("TestFileOps", "test")
+	read, err := shutter.ReadSnapshot("TestFileOps", "test")
 	if err != nil {
 		t.Fatalf("failed to read snapshot: %v", err)
 	}
@@ -113,7 +113,7 @@ func TestSnapshotFileName(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		result := freeze.SnapshotFileName(tt.input)
+		result := shutter.SnapshotFileName(tt.input)
 		if result != tt.expected {
 			t.Errorf("SnapshotFileName(%s) = %s, want %s", tt.input, result, tt.expected)
 		}
@@ -124,13 +124,13 @@ func TestHistogramDiff(t *testing.T) {
 	oldStr := "line1\nline2\nline3"
 	newStr := "line1\nmodified\nline3"
 
-	diff := freeze.Histogram(oldStr, newStr)
+	diff := shutter.Histogram(oldStr, newStr)
 
 	if len(diff) < 3 {
 		t.Errorf("expected at least 3 diff lines, got %d", len(diff))
 	}
 
-	if diff[0].Kind != freeze.DiffShared || diff[0].Line != "line1" {
+	if diff[0].Kind != shutter.DiffShared || diff[0].Line != "line1" {
 		t.Errorf("line 0: expected shared 'line1', got %v %s", diff[0].Kind, diff[0].Line)
 	}
 
@@ -138,7 +138,7 @@ func TestHistogramDiff(t *testing.T) {
 	for _, d := range diff {
 		if d.Line == "modified" {
 			hasModified = true
-			if d.Kind != freeze.DiffNew {
+			if d.Kind != shutter.DiffNew {
 				t.Errorf("'modified' should be marked as new")
 			}
 		}
@@ -149,7 +149,7 @@ func TestHistogramDiff(t *testing.T) {
 
 	hasLine3 := false
 	for _, d := range diff {
-		if d.Line == "line3" && d.Kind == freeze.DiffShared {
+		if d.Line == "line3" && d.Kind == shutter.DiffShared {
 			hasLine3 = true
 		}
 	}
@@ -159,19 +159,19 @@ func TestHistogramDiff(t *testing.T) {
 }
 
 func TestDiffSnapshotBox(t *testing.T) {
-	old := &freeze.Snapshot{
+	old := &shutter.Snapshot{
 		Title:   "Diff Test Title",
 		Test:    "TestDiff",
 		Content: "old content",
 	}
 
-	new := &freeze.Snapshot{
+	new := &shutter.Snapshot{
 		Title:   "Diff Test Title",
 		Test:    "TestDiff",
 		Content: "new content",
 	}
 
-	box := freeze.DiffSnapshotBox(old, new)
+	box := shutter.DiffSnapshotBox(old, new)
 	if box == "" {
 		t.Error("DiffSnapshotBox returned empty string")
 	}
@@ -182,13 +182,13 @@ func TestDiffSnapshotBox(t *testing.T) {
 }
 
 func TestNewSnapshotBox(t *testing.T) {
-	snap := &freeze.Snapshot{
+	snap := &shutter.Snapshot{
 		Title:   "New Test Title",
 		Test:    "TestNew",
 		Content: "test content",
 	}
 
-	box := freeze.NewSnapshotBox(snap)
+	box := shutter.NewSnapshotBox(snap)
 	if box == "" {
 		t.Error("NewSnapshotBox returned empty string")
 	}
@@ -305,7 +305,7 @@ func TestComplexNestedStructure(t *testing.T) {
 		CreatedAt: time.Date(2023, 1, 20, 9, 0, 0, 0, time.UTC),
 	}
 
-	freeze.Snap(t, "Complex Nested Structure", post)
+	shutter.Snap(t, "Complex Nested Structure", post)
 }
 
 func TestMultipleComplexStructures(t *testing.T) {
@@ -345,7 +345,7 @@ func TestMultipleComplexStructures(t *testing.T) {
 		},
 	}
 
-	freeze.Snap(t, "Multiple Complex Structures", users)
+	shutter.Snap(t, "Multiple Complex Structures", users)
 }
 
 func TestStructureWithInterface(t *testing.T) {
@@ -398,7 +398,7 @@ func TestStructureWithInterface(t *testing.T) {
 		},
 	}
 
-	freeze.Snap(t, "Structure with Interface Fields", responses)
+	shutter.Snap(t, "Structure with Interface Fields", responses)
 }
 
 func TestNestedMapsAndSlices(t *testing.T) {
@@ -444,7 +444,7 @@ func TestNestedMapsAndSlices(t *testing.T) {
 		},
 	}
 
-	freeze.Snap(t, "Nested Maps and Slices", complexData)
+	shutter.Snap(t, "Nested Maps and Slices", complexData)
 }
 
 func TestStructureWithPointers(t *testing.T) {
@@ -486,7 +486,7 @@ func TestStructureWithPointers(t *testing.T) {
 		Friends: []*Person{&person1},
 	}
 
-	freeze.Snap(t, "Structure with Pointers", person2)
+	shutter.Snap(t, "Structure with Pointers", person2)
 }
 
 func TestStructureWithEmptyValues(t *testing.T) {
@@ -522,7 +522,7 @@ func TestStructureWithEmptyValues(t *testing.T) {
 		},
 	}
 
-	freeze.Snap(t, "Structure with Empty Values", containers)
+	shutter.Snap(t, "Structure with Empty Values", containers)
 }
 
 // ============================================================================
@@ -553,7 +553,7 @@ func TestJsonObject(t *testing.T) {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
 
-	freeze.Snap(t, "JSON Object", data)
+	shutter.Snap(t, "JSON Object", data)
 }
 
 func TestComplexJsonStructure(t *testing.T) {
@@ -621,7 +621,7 @@ func TestComplexJsonStructure(t *testing.T) {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
 
-	freeze.Snap(t, "Complex JSON Structure", data)
+	shutter.Snap(t, "Complex JSON Structure", data)
 }
 
 func TestJsonArrayOfObjects(t *testing.T) {
@@ -659,7 +659,7 @@ func TestJsonArrayOfObjects(t *testing.T) {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
 
-	freeze.Snap(t, "JSON Array of Objects", data)
+	shutter.Snap(t, "JSON Array of Objects", data)
 }
 
 func TestJsonWithVariousTypes(t *testing.T) {
@@ -685,7 +685,7 @@ func TestJsonWithVariousTypes(t *testing.T) {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
 
-	freeze.Snap(t, "JSON with Various Types", data)
+	shutter.Snap(t, "JSON with Various Types", data)
 }
 
 func TestJsonNumbers(t *testing.T) {
@@ -713,7 +713,7 @@ func TestJsonNumbers(t *testing.T) {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
 
-	freeze.Snap(t, "JSON Numbers", data)
+	shutter.Snap(t, "JSON Numbers", data)
 }
 
 func TestJsonWithSpecialCharacters(t *testing.T) {
@@ -733,7 +733,7 @@ func TestJsonWithSpecialCharacters(t *testing.T) {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
 
-	freeze.Snap(t, "JSON with Special Characters", data)
+	shutter.Snap(t, "JSON with Special Characters", data)
 }
 
 func TestGoStructMarshalledToJson(t *testing.T) {
@@ -777,7 +777,7 @@ func TestGoStructMarshalledToJson(t *testing.T) {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
 
-	freeze.Snap(t, "Go Struct Marshalled to JSON", data)
+	shutter.Snap(t, "Go Struct Marshalled to JSON", data)
 }
 
 func TestDeeplyNestedJson(t *testing.T) {
@@ -817,7 +817,7 @@ func TestDeeplyNestedJson(t *testing.T) {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
 
-	freeze.Snap(t, "Deeply Nested JSON", data)
+	shutter.Snap(t, "Deeply Nested JSON", data)
 }
 
 func TestLargeJson(t *testing.T) {
@@ -893,7 +893,7 @@ func TestLargeJson(t *testing.T) {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
 
-	freeze.Snap(t, "Large JSON Structure", data)
+	shutter.Snap(t, "Large JSON Structure", data)
 }
 
 func TestJsonWithMixedArrays(t *testing.T) {
@@ -924,7 +924,7 @@ func TestJsonWithMixedArrays(t *testing.T) {
 		t.Fatalf("failed to unmarshal json: %v", err)
 	}
 
-	freeze.Snap(t, "JSON with Mixed Arrays", data)
+	shutter.Snap(t, "JSON with Mixed Arrays", data)
 }
 
 // ============================================================================
@@ -939,7 +939,7 @@ func TestSnapJsonBasic(t *testing.T) {
 		"verified": true
 	}`
 
-	freeze.SnapJSON(t, "SnapJSON Basic Object", jsonStr)
+	shutter.SnapJSON(t, "SnapJSON Basic Object", jsonStr)
 }
 
 func TestSnapJsonSimpleArray(t *testing.T) {
@@ -950,13 +950,13 @@ func TestSnapJsonSimpleArray(t *testing.T) {
 		"grape"
 	]`
 
-	freeze.SnapJSON(t, "SnapJSON Simple Array", jsonStr)
+	shutter.SnapJSON(t, "SnapJSON Simple Array", jsonStr)
 }
 
 func TestSnapJsonCompactFormat(t *testing.T) {
 	jsonStr := `{"id":1,"name":"Product","price":99.99,"in_stock":true,"tags":["electronics","gadgets"]}`
 
-	freeze.SnapJSON(t, "SnapJSON Compact Format", jsonStr)
+	shutter.SnapJSON(t, "SnapJSON Compact Format", jsonStr)
 }
 
 func TestSnapJsonWithNestedObjects(t *testing.T) {
@@ -977,7 +977,7 @@ func TestSnapJsonWithNestedObjects(t *testing.T) {
 		"created_at": "2023-06-15T10:30:00Z"
 	}`
 
-	freeze.SnapJSON(t, "SnapJSON Nested Objects", jsonStr)
+	shutter.SnapJSON(t, "SnapJSON Nested Objects", jsonStr)
 }
 
 func TestSnapJsonComplexAPI(t *testing.T) {
@@ -1018,7 +1018,7 @@ func TestSnapJsonComplexAPI(t *testing.T) {
 		"timestamp": "2023-11-18T21:45:30Z"
 	}`
 
-	freeze.SnapJSON(t, "SnapJSON Complex API Response", jsonStr)
+	shutter.SnapJSON(t, "SnapJSON Complex API Response", jsonStr)
 }
 
 func TestSnapJsonWithNulls(t *testing.T) {
@@ -1035,7 +1035,7 @@ func TestSnapJsonWithNulls(t *testing.T) {
 		}
 	}`
 
-	freeze.SnapJSON(t, "SnapJSON With Nulls", jsonStr)
+	shutter.SnapJSON(t, "SnapJSON With Nulls", jsonStr)
 }
 
 func TestSnapJsonArrayOfObjects(t *testing.T) {
@@ -1063,7 +1063,7 @@ func TestSnapJsonArrayOfObjects(t *testing.T) {
 		}
 	]`
 
-	freeze.SnapJSON(t, "SnapJSON Array of Objects", jsonStr)
+	shutter.SnapJSON(t, "SnapJSON Array of Objects", jsonStr)
 }
 
 func TestSnapJsonLargeNestedStructure(t *testing.T) {
@@ -1125,7 +1125,7 @@ func TestSnapJsonLargeNestedStructure(t *testing.T) {
 		}
 	}`
 
-	freeze.SnapJSON(t, "SnapJSON Large Nested Structure", jsonStr)
+	shutter.SnapJSON(t, "SnapJSON Large Nested Structure", jsonStr)
 }
 
 func TestSnapJsonWithNumbers(t *testing.T) {
@@ -1144,7 +1144,7 @@ func TestSnapJsonWithNumbers(t *testing.T) {
 		}
 	}`
 
-	freeze.SnapJSON(t, "SnapJSON With Numbers", jsonStr)
+	shutter.SnapJSON(t, "SnapJSON With Numbers", jsonStr)
 }
 
 func TestSnapJsonWithSpecialCharacters(t *testing.T) {
@@ -1158,7 +1158,7 @@ func TestSnapJsonWithSpecialCharacters(t *testing.T) {
 		"regex": "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$"
 	}`
 
-	freeze.SnapJSON(t, "SnapJSON With Special Characters", jsonStr)
+	shutter.SnapJSON(t, "SnapJSON With Special Characters", jsonStr)
 }
 
 func TestSnapJsonEmptyStructures(t *testing.T) {
@@ -1175,7 +1175,7 @@ func TestSnapJsonEmptyStructures(t *testing.T) {
 		}
 	}`
 
-	freeze.SnapJSON(t, "SnapJSON Empty Structures", jsonStr)
+	shutter.SnapJSON(t, "SnapJSON Empty Structures", jsonStr)
 }
 
 func TestSnapJsonMixedTypes(t *testing.T) {
@@ -1199,7 +1199,7 @@ func TestSnapJsonMixedTypes(t *testing.T) {
 		]
 	}`
 
-	freeze.SnapJSON(t, "SnapJSON Mixed Types", jsonStr)
+	shutter.SnapJSON(t, "SnapJSON Mixed Types", jsonStr)
 }
 
 func TestSnapJsonRealWorldExample(t *testing.T) {
@@ -1278,7 +1278,7 @@ func TestSnapJsonRealWorldExample(t *testing.T) {
 		"timestamp": "2023-11-18T22:00:00Z"
 	}`
 
-	freeze.SnapJSON(t, "SnapJSON Real World Example", jsonStr)
+	shutter.SnapJSON(t, "SnapJSON Real World Example", jsonStr)
 }
 
 func ptr[T any](t T) *T { return &t }

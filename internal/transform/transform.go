@@ -32,10 +32,6 @@ func ApplyScrubbers(content string, scrubbers []Scrubber) string {
 
 // TransformJSON applies scrubbers and ignore patterns to JSON data.
 func TransformJSON(jsonStr string, config *Config) (string, error) {
-	if config == nil || (len(config.Scrubbers) == 0 && len(config.Ignore) == 0) {
-		return jsonStr, nil
-	}
-
 	var data any
 	if err := json.Unmarshal([]byte(jsonStr), &data); err != nil {
 		return "", fmt.Errorf("failed to unmarshal JSON: %w", err)

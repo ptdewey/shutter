@@ -1,63 +1,103 @@
 ---
 title: SnapJSON Large Nested Structure
 test_name: TestSnapJsonLargeNestedStructure
-file_name: freeze_test.go
+file_name: shutter_test.go
 version: 0.1.0
 ---
 {
-		"organization": {
-			"name": "TechCorp",
-			"id": "org_123",
-			"departments": [
-				{
-					"name": "Engineering",
-					"manager": "Alice",
-					"teams": [
-						{
-							"name": "Backend",
-							"lead": "John",
-							"members": [
-								{"id": 1, "name": "John", "level": "senior"},
-								{"id": 2, "name": "Jane", "level": "mid"}
-							],
-							"projects": [
-								{"id": "proj_1", "name": "API Service", "status": "active"},
-								{"id": "proj_2", "name": "Database Optimization", "status": "planning"}
-							]
-						},
-						{
-							"name": "Frontend",
-							"lead": "Bob",
-							"members": [
-								{"id": 3, "name": "Bob", "level": "senior"},
-								{"id": 4, "name": "Carol", "level": "junior"}
-							],
-							"projects": [
-								{"id": "proj_3", "name": "Web App", "status": "active"}
-							]
-						}
-					]
-				},
-				{
-					"name": "Sales",
-					"manager": "Charlie",
-					"teams": [
-						{
-							"name": "Enterprise",
-							"lead": "Dave",
-							"members": [
-								{"id": 5, "name": "Dave", "level": "senior"},
-								{"id": 6, "name": "Eve", "level": "mid"}
-							],
-							"projects": []
-						}
-					]
-				}
-			],
-			"metadata": {
-				"founded": "2020",
-				"employees": 150,
-				"locations": ["USA", "EU", "APAC"]
-			}
-		}
-	}
+  "organization": {
+    "departments": [
+      {
+        "manager": "Alice",
+        "name": "Engineering",
+        "teams": [
+          {
+            "lead": "John",
+            "members": [
+              {
+                "id": 1,
+                "level": "senior",
+                "name": "John"
+              },
+              {
+                "id": 2,
+                "level": "mid",
+                "name": "Jane"
+              }
+            ],
+            "name": "Backend",
+            "projects": [
+              {
+                "id": "proj_1",
+                "name": "API Service",
+                "status": "active"
+              },
+              {
+                "id": "proj_2",
+                "name": "Database Optimization",
+                "status": "planning"
+              }
+            ]
+          },
+          {
+            "lead": "Bob",
+            "members": [
+              {
+                "id": 3,
+                "level": "senior",
+                "name": "Bob"
+              },
+              {
+                "id": 4,
+                "level": "junior",
+                "name": "Carol"
+              }
+            ],
+            "name": "Frontend",
+            "projects": [
+              {
+                "id": "proj_3",
+                "name": "Web App",
+                "status": "active"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "manager": "Charlie",
+        "name": "Sales",
+        "teams": [
+          {
+            "lead": "Dave",
+            "members": [
+              {
+                "id": 5,
+                "level": "senior",
+                "name": "Dave"
+              },
+              {
+                "id": 6,
+                "level": "mid",
+                "name": "Eve"
+              }
+            ],
+            "name": "Enterprise",
+            "projects": []
+          }
+        ]
+      }
+    ],
+    "id": "org_123",
+    "metadata": {
+      "employees": 150,
+      "founded": "2020",
+      "locations": [
+        "USA",
+        "EU",
+        "APAC"
+      ]
+    },
+    "name": "TechCorp"
+  }
+}

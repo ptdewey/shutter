@@ -6,9 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ptdewey/freeze/internal/diff"
-	"github.com/ptdewey/freeze/internal/files"
-	"github.com/ptdewey/freeze/internal/pretty"
+	"github.com/ptdewey/shutter/internal/diff"
+	"github.com/ptdewey/shutter/internal/files"
+	"github.com/ptdewey/shutter/internal/pretty"
 )
 
 type ReviewChoice int

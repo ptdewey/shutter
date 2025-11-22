@@ -1,10 +1,10 @@
-package freeze_test
+package shutter_test
 
 import (
 	"strings"
 	"testing"
 
-	"github.com/ptdewey/freeze"
+	"github.com/ptdewey/shutter"
 )
 
 func TestScrubUUIDs(t *testing.T) {
@@ -14,8 +14,8 @@ func TestScrubUUIDs(t *testing.T) {
 		"name": "John Doe"
 	}`
 
-	freeze.SnapJSONWithOptions(t, "Scrubbed UUIDs", jsonStr, []freeze.SnapshotOption{
-		freeze.ScrubUUIDs(),
+	shutter.SnapJSONWithOptions(t, "Scrubbed UUIDs", jsonStr, []shutter.SnapshotOption{
+		shutter.ScrubUUIDs(),
 	})
 }
 
@@ -27,8 +27,8 @@ func TestScrubTimestamps(t *testing.T) {
 		"name": "Test Event"
 	}`
 
-	freeze.SnapJSONWithOptions(t, "Scrubbed Timestamps", jsonStr, []freeze.SnapshotOption{
-		freeze.ScrubTimestamps(),
+	shutter.SnapJSONWithOptions(t, "Scrubbed Timestamps", jsonStr, []shutter.SnapshotOption{
+		shutter.ScrubTimestamps(),
 	})
 }
 
@@ -39,8 +39,8 @@ func TestScrubEmails(t *testing.T) {
 		"name": "John Doe"
 	}`
 
-	freeze.SnapJSONWithOptions(t, "Scrubbed Emails", jsonStr, []freeze.SnapshotOption{
-		freeze.ScrubEmails(),
+	shutter.SnapJSONWithOptions(t, "Scrubbed Emails", jsonStr, []shutter.SnapshotOption{
+		shutter.ScrubEmails(),
 	})
 }
 
@@ -51,8 +51,8 @@ func TestScrubIPAddresses(t *testing.T) {
 		"message": "Connection from 172.16.0.100"
 	}`
 
-	freeze.SnapJSONWithOptions(t, "Scrubbed IPs", jsonStr, []freeze.SnapshotOption{
-		freeze.ScrubIPAddresses(),
+	shutter.SnapJSONWithOptions(t, "Scrubbed IPs", jsonStr, []shutter.SnapshotOption{
+		shutter.ScrubIPAddresses(),
 	})
 }
 
@@ -62,8 +62,8 @@ func TestScrubJWTs(t *testing.T) {
 		"refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U"
 	}`
 
-	freeze.SnapJSONWithOptions(t, "Scrubbed JWTs", jsonStr, []freeze.SnapshotOption{
-		freeze.ScrubJWTs(),
+	shutter.SnapJSONWithOptions(t, "Scrubbed JWTs", jsonStr, []shutter.SnapshotOption{
+		shutter.ScrubJWTs(),
 	})
 }
 
@@ -76,11 +76,11 @@ func TestMultipleScrubbers(t *testing.T) {
 		"name": "John Doe"
 	}`
 
-	freeze.SnapJSONWithOptions(t, "Multiple Scrubbers", jsonStr, []freeze.SnapshotOption{
-		freeze.ScrubUUIDs(),
-		freeze.ScrubEmails(),
-		freeze.ScrubTimestamps(),
-		freeze.ScrubIPAddresses(),
+	shutter.SnapJSONWithOptions(t, "Multiple Scrubbers", jsonStr, []shutter.SnapshotOption{
+		shutter.ScrubUUIDs(),
+		shutter.ScrubEmails(),
+		shutter.ScrubTimestamps(),
+		shutter.ScrubIPAddresses(),
 	})
 }
 
@@ -91,24 +91,24 @@ func TestRegexScrubber(t *testing.T) {
 		"name": "Test User"
 	}`
 
-	freeze.SnapJSONWithOptions(t, "Custom Regex Scrubber", jsonStr, []freeze.SnapshotOption{
-		freeze.RegexScrubber(`sk_(live|test)_[a-zA-Z0-9]+`, "<API_KEY>"),
+	shutter.SnapJSONWithOptions(t, "Custom Regex Scrubber", jsonStr, []shutter.SnapshotOption{
+		shutter.RegexScrubber(`sk_(live|test)_[a-zA-Z0-9]+`, "<API_KEY>"),
 	})
 }
 
 func TestExactMatchScrubber(t *testing.T) {
 	content := "The secret password is 'p@ssw0rd123' and should be hidden."
 
-	freeze.SnapStringWithOptions(t, "Exact Match Scrubber", content, []freeze.SnapshotOption{
-		freeze.ExactMatchScrubber("p@ssw0rd123", "<PASSWORD>"),
+	shutter.SnapStringWithOptions(t, "Exact Match Scrubber", content, []shutter.SnapshotOption{
+		shutter.ExactMatchScrubber("p@ssw0rd123", "<PASSWORD>"),
 	})
 }
 
 func TestCustomScrubber(t *testing.T) {
 	content := "Hello World! This is a TEST."
 
-	freeze.SnapStringWithOptions(t, "Custom Scrubber", content, []freeze.SnapshotOption{
-		freeze.CustomScrubber(func(s string) string {
+	shutter.SnapStringWithOptions(t, "Custom Scrubber", content, []shutter.SnapshotOption{
+		shutter.CustomScrubber(func(s string) string {
 			return strings.ToLower(s)
 		}),
 	})
@@ -122,8 +122,8 @@ func TestScrubDates(t *testing.T) {
 		"name": "John Doe"
 	}`
 
-	freeze.SnapJSONWithOptions(t, "Scrubbed Dates", jsonStr, []freeze.SnapshotOption{
-		freeze.ScrubDates(),
+	shutter.SnapJSONWithOptions(t, "Scrubbed Dates", jsonStr, []shutter.SnapshotOption{
+		shutter.ScrubDates(),
 	})
 }
 
@@ -135,8 +135,8 @@ func TestScrubAPIKeys(t *testing.T) {
 		"name": "Test Config"
 	}`
 
-	freeze.SnapJSONWithOptions(t, "Scrubbed API Keys", jsonStr, []freeze.SnapshotOption{
-		freeze.ScrubAPIKeys(),
+	shutter.SnapJSONWithOptions(t, "Scrubbed API Keys", jsonStr, []shutter.SnapshotOption{
+		shutter.ScrubAPIKeys(),
 	})
 }
 
@@ -148,10 +148,10 @@ func TestScrubWithSnapFunction(t *testing.T) {
 		"name":       "John Doe",
 	}
 
-	freeze.SnapWithOptions(t, "Scrub With Snap", []freeze.SnapshotOption{
-		freeze.ScrubUUIDs(),
-		freeze.ScrubEmails(),
-		freeze.ScrubTimestamps(),
+	shutter.SnapWithOptions(t, "Scrub With Snap", []shutter.SnapshotOption{
+		shutter.ScrubUUIDs(),
+		shutter.ScrubEmails(),
+		shutter.ScrubTimestamps(),
 	}, data)
 }
 
@@ -163,8 +163,8 @@ func TestCreditCardScrubbing(t *testing.T) {
 		"name": "John Doe"
 	}`
 
-	freeze.SnapJSONWithOptions(t, "Scrubbed Credit Cards", jsonStr, []freeze.SnapshotOption{
-		freeze.ScrubCreditCards(),
+	shutter.SnapJSONWithOptions(t, "Scrubbed Credit Cards", jsonStr, []shutter.SnapshotOption{
+		shutter.ScrubCreditCards(),
 	})
 }
 
@@ -176,7 +176,7 @@ func TestUnixTimestampScrubbing(t *testing.T) {
 		"name": "Test Event"
 	}`
 
-	freeze.SnapJSONWithOptions(t, "Scrubbed Unix Timestamps", jsonStr, []freeze.SnapshotOption{
-		freeze.ScrubUnixTimestamps(),
+	shutter.SnapJSONWithOptions(t, "Scrubbed Unix Timestamps", jsonStr, []shutter.SnapshotOption{
+		shutter.ScrubUnixTimestamps(),
 	})
 }

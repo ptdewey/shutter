@@ -1,27 +1,27 @@
 ---
 title: Structure with Pointers
 test_name: TestStructureWithPointers
-file_name: freeze_test.go
+file_name: shutter_test.go
 version: 0.1.0
 ---
-freeze_test.Person{
+shutter_test.Person{
  Name: "John",
  Age: 35,
- Address: &freeze_test.Address{
+ Address: &shutter_test.Address{
   Street: "123 Main St",
   City: "Boston",
   Zip: "02101",
  },
- Manager: &freeze_test.Person{
+ Manager: &shutter_test.Person{
   Name: "Jane",
   Age: 30,
-  Address: (*freeze_test.Address)(<already shown>),
-  Manager: (*freeze_test.Person)(nil),
-  Friends: []*freeze_test.Person(nil),
+  Address: (*shutter_test.Address)(<already shown>),
+  Manager: (*shutter_test.Person)(nil),
+  Friends: []*shutter_test.Person(nil),
   Email: &string("jane@example.com"),
  },
- Friends: []*freeze_test.Person{
-  (*freeze_test.Person)(<already shown>),
+ Friends: []*shutter_test.Person{
+  (*shutter_test.Person)(<already shown>),
  },
  Email: (*string)(nil),
 }

@@ -3,7 +3,7 @@ package diff_test
 import (
 	"testing"
 
-	"github.com/ptdewey/freeze/internal/diff"
+	"github.com/ptdewey/shutter/internal/diff"
 )
 
 func TestHistogramEmpty(t *testing.T) {

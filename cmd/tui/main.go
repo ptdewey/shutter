@@ -8,9 +8,9 @@ import (
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/ptdewey/freeze/internal/diff"
-	"github.com/ptdewey/freeze/internal/files"
-	"github.com/ptdewey/freeze/internal/pretty"
+	"github.com/ptdewey/shutter/internal/diff"
+	"github.com/ptdewey/shutter/internal/files"
+	"github.com/ptdewey/shutter/internal/pretty"
 )
 
 // Styles
@@ -417,7 +417,7 @@ func main() {
 			}
 			return
 		case "help", "-h", "--help":
-			fmt.Println(`Usage: freeze-tui [COMMAND]
+			fmt.Println(`Usage: shutter-tui [COMMAND]
 
 Commands:
   review      Review and accept/reject new snapshots (default)

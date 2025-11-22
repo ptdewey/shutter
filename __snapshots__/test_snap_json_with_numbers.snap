@@ -1,20 +1,34 @@
 ---
 title: SnapJSON With Numbers
 test_name: TestSnapJsonWithNumbers
-file_name: freeze_test.go
+file_name: shutter_test.go
 version: 0.1.0
 ---
 {
-		"integers": [0, 1, -1, 42, -100, 9999999],
-		"floats": [0.0, 3.14, -2.5, 0.001, 1.23e-4, 5.67e10],
-		"financial": {
-			"revenue": 1000000.50,
-			"expenses": 750000.75,
-			"profit_margin": 0.2499
-		},
-		"measurements": {
-			"temperature": -40.5,
-			"distance": 1000.25,
-			"weight": 0.5
-		}
-	}
+  "financial": {
+    "expenses": 750000.75,
+    "profit_margin": 0.2499,
+    "revenue": 1000000.5
+  },
+  "floats": [
+    0,
+    3.14,
+    -2.5,
+    0.001,
+    0.000123,
+    56700000000
+  ],
+  "integers": [
+    0,
+    1,
+    -1,
+    42,
+    -100,
+    9999999
+  ],
+  "measurements": {
+    "distance": 1000.25,
+    "temperature": -40.5,
+    "weight": 0.5
+  }
+}

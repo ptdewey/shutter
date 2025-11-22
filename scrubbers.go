@@ -1,4 +1,4 @@
-package freeze
+package shutter
 
 import (
 	"regexp"
@@ -106,9 +106,6 @@ func ScrubIPAddresses() SnapshotOption {
 	})
 }
 
-// ScrubCreditCards replaces credit card numbers with "<CREDIT_CARD>".
-// Note: This uses a conservative pattern that requires context keywords to avoid
-// false positives. For aggressive scrubbing, use a custom regex.
 func ScrubCreditCards() SnapshotOption {
 	return WithScrubber(&regexScrubber{
 		pattern:     creditCardPattern,
@@ -116,7 +113,6 @@ func ScrubCreditCards() SnapshotOption {
 	})
 }
 
-// ScrubJWTs replaces JWT tokens with "<JWT>".
 func ScrubJWTs() SnapshotOption {
 	return WithScrubber(&regexScrubber{
 		pattern:     jwtPattern,
@@ -124,8 +120,6 @@ func ScrubJWTs() SnapshotOption {
 	})
 }
 
-// ScrubDates replaces dates in various formats with "<DATE>".
-// Matches formats like: 2023-01-15, 01/15/2023, 15-01-2023
 func ScrubDates() SnapshotOption {
 	datePattern := regexp.MustCompile(`\b\d{4}[-/]\d{2}[-/]\d{2}\b|\b\d{2}[-/]\d{2}[-/]\d{4}\b`)
 	return WithScrubber(&regexScrubber{
@@ -152,7 +146,6 @@ func (c *customScrubber) Scrub(content string) string {
 	return c.scrubFunc(content)
 }
 
-// CustomScrubber creates a scrubber using a custom function.
 func CustomScrubber(scrubFunc func(string) string) SnapshotOption {
 	return WithScrubber(&customScrubber{
 		scrubFunc: scrubFunc,

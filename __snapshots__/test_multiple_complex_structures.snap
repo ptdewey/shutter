@@ -1,10 +1,10 @@
 ---
 title: Multiple Complex Structures
 test_name: TestMultipleComplexStructures
-file_name: freeze_test.go
+file_name: shutter_test.go
 version: 0.1.0
 ---
-[]freeze_test.User{
+[]shutter_test.User{
  {
   ID: 1,
   Username: "alice",

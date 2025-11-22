@@ -1,14 +1,14 @@
 ---
 title: Complex Nested Structure
 test_name: TestComplexNestedStructure
-file_name: freeze_test.go
+file_name: shutter_test.go
 version: 0.1.0
 ---
-freeze_test.Post{
+shutter_test.Post{
  ID: 100,
  Title: "Introduction to Go Snapshot Testing",
  Content: "This is a comprehensive guide to snapshot testing in Go...",
- Author: freeze_test.User{
+ Author: shutter_test.User{
   ID: 1,
   Username: "john_doe",
   Email: "john@example.com",
@@ -39,7 +39,7 @@ freeze_test.Post{
   "snapshots",
   "best-practices",
  },
- Comments: []freeze_test.Comment{
+ Comments: []shutter_test.Comment{
   {
    ID: 1,
    Author: "alice",
@@ -49,7 +49,7 @@ freeze_test.Post{
     ext: 63810858120,
     loc: (*time.Location)(nil),
    },
-   Replies: []freeze_test.Comment{
+   Replies: []shutter_test.Comment{
     {
      ID: 2,
      Author: "bob",
@@ -59,7 +59,7 @@ freeze_test.Post{
       ext: 63810863100,
       loc: (*time.Location)(nil),
      },
-     Replies: []freeze_test.Comment{
+     Replies: []shutter_test.Comment{
      },
     },
    },
@@ -73,7 +73,7 @@ freeze_test.Post{
     ext: 63810927000,
     loc: (*time.Location)(nil),
    },
-   Replies: []freeze_test.Comment{
+   Replies: []shutter_test.Comment{
    },
   },
  },

@@ -8,4 +8,5 @@
 go.work
 go.work.sum
 .env
-cmd/tui/freeze-tui
+cmd/tui/shutter
+cmd/shutter/shutter

@@ -1,4 +1,4 @@
-package freeze
+package shutter
 
 import (
 	"fmt"
@@ -6,11 +6,11 @@ import (
 	"runtime"
 
 	"github.com/kortschak/utter"
-	"github.com/ptdewey/freeze/internal/diff"
-	"github.com/ptdewey/freeze/internal/files"
-	"github.com/ptdewey/freeze/internal/pretty"
-	"github.com/ptdewey/freeze/internal/review"
-	"github.com/ptdewey/freeze/internal/transform"
+	"github.com/ptdewey/shutter/internal/diff"
+	"github.com/ptdewey/shutter/internal/files"
+	"github.com/ptdewey/shutter/internal/pretty"
+	"github.com/ptdewey/shutter/internal/review"
+	"github.com/ptdewey/shutter/internal/transform"
 )
 
 const version = "0.1.0"
@@ -94,7 +94,7 @@ func snap(t testingT, title string, content string) {
 	testName := t.Name()
 
 	// Capture the caller's file name by walking up the call stack
-	// to find the first file that's not freeze.go  TODO: does this actually work for all cases?
+	// to find the first file that's not shutter.go  TODO: does this actually work for all cases?
 	fileName := "unknown"
 	for i := 1; i < 10; i++ {
 		_, file, _, ok := runtime.Caller(i)
@@ -102,8 +102,8 @@ func snap(t testingT, title string, content string) {
 			break
 		}
 		baseName := filepath.Base(file)
-		// Skip frames within freeze.go to get to the actual test file
-		if baseName != "freeze.go" {
+		// Skip frames within shutter.go to get to the actual test file
+		if baseName != "shutter.go" {
 			fileName = baseName
 			break
 		}
@@ -136,7 +136,7 @@ func snapWithTitle(t testingT, title string, testName string, fileName string, c
 
 		diffLines := diff.Histogram(accepted.Content, snapshot.Content)
 		fmt.Println(pretty.DiffSnapshotBox(accepted, snapshot, diffLines))
-		t.Error("snapshot mismatch - run 'freeze review' to update")
+		t.Error("snapshot mismatch - run 'shutter review' to update")
 		return
 	}
 
@@ -146,7 +146,7 @@ func snapWithTitle(t testingT, title string, testName string, fileName string, c
 	}
 
 	fmt.Println(pretty.NewSnapshotBox(snapshot))
-	t.Error("new snapshot created - run 'freeze review' to accept")
+	t.Error("new snapshot created - run 'shutter review' to accept")
 }
 
 func formatValues(values ...any) string {
@@ -187,7 +187,7 @@ type testingT interface {
 	Cleanup(func())
 }
 
-// Type conversion helpers to bridge freeze package types with transform package types.
+// Type conversion helpers to bridge shutter package types with transform package types.
 // These work because the interfaces have identical method signatures (structural typing).
 
 func toTransformScrubbers(scrubbers []Scrubber) []transform.Scrubber {

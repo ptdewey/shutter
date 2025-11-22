@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ptdewey/freeze"
+	"github.com/ptdewey/shutter"
 )
 
 func main() {
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, `Usage: freeze [COMMAND]
+		fmt.Fprintf(os.Stderr, `Usage: shutter [COMMAND]
 
 Commands:
   review      Review and accept/reject new snapshots (default)
@@ -19,10 +19,10 @@ Commands:
   help        Show this help message
 
 Examples:
-  freeze              # Start interactive review
-  freeze review       # Same as above
-  freeze accept-all   # Accept all new snapshots
-  freeze reject-all   # Reject all new snapshots
+  shutter              # Start interactive review
+  shutter review       # Same as above
+  shutter accept-all   # Accept all new snapshots
+  shutter reject-all   # Reject all new snapshots
 `)
 	}
 
@@ -36,11 +36,11 @@ Examples:
 	var err error
 	switch cmd {
 	case "", "review":
-		err = freeze.Review()
+		err = shutter.Review()
 	case "accept-all":
-		err = freeze.AcceptAll()
+		err = shutter.AcceptAll()
 	case "reject-all":
-		err = freeze.RejectAll()
+		err = shutter.RejectAll()
 	case "help", "-h", "--help":
 		flag.Usage()
 		return

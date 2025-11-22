@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ptdewey/freeze/internal/files"
+	"github.com/ptdewey/shutter/internal/files"
 )
 
 func TestSnapshotFileName(t *testing.T) {

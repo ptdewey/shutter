@@ -1,4 +1,4 @@
-package freeze
+package shutter
 
 import (
 	"regexp"

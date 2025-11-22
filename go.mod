@@ -1,4 +1,4 @@
-module github.com/ptdewey/freeze
+module github.com/ptdewey/shutter
 
 go 1.25.2
 

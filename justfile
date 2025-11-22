@@ -6,14 +6,14 @@ test:
     @go test ./... -cover -coverprofile=cover.out
 
 run:
-    @go run cmd/freeze/main.go
+    @go run cmd/shutter/main.go
 
 clean:
     @rm -rf ./__snapshots__
 
 tui:
-    @pushd ./cmd/tui && go build -o freeze-tui ./main.go && popd
-    @./cmd/tui/freeze-tui
+    @pushd ./cmd/tui && go build -o shutter ./main.go && popd
+    @./cmd/tui/shutter
 
 review:
-    @./cmd/tui/freeze-tui
+    @./cmd/tui/shutter

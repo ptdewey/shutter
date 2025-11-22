@@ -1,7 +1,7 @@
 ---
 title: Complex JSON Structure
 test_name: TestComplexJsonStructure
-file_name: freeze_test.go
+file_name: shutter_test.go
 version: 0.1.0
 ---
 map[string]interface{}{

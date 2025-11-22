@@ -1,18 +1,18 @@
 ---
 title: SnapJSON With Nulls
 test_name: TestSnapJsonWithNulls
-file_name: freeze_test.go
+file_name: shutter_test.go
 version: 0.1.0
 ---
 {
-		"id": 1,
-		"name": "Item",
-		"description": null,
-		"category": null,
-		"tags": null,
-		"metadata": {
-			"created": "2023-01-01",
-			"updated": null,
-			"deleted": null
-		}
-	}
+  "category": null,
+  "description": null,
+  "id": 1,
+  "metadata": {
+    "created": "2023-01-01",
+    "deleted": null,
+    "updated": null
+  },
+  "name": "Item",
+  "tags": null
+}

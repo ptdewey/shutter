@@ -1,10 +1,10 @@
 ---
 title: Custom Type Test
 test_name: TestSnapCustomType
-file_name: freeze_test.go
+file_name: shutter_test.go
 version: 0.1.0
 ---
-freeze_test.CustomStruct{
+shutter_test.CustomStruct{
  Name: "Alice",
  Age: 30,
 }

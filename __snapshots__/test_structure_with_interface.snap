@@ -1,14 +1,14 @@
 ---
 title: Structure with Interface Fields
 test_name: TestStructureWithInterface
-file_name: freeze_test.go
+file_name: shutter_test.go
 version: 0.1.0
 ---
-[]freeze_test.Response{
+[]shutter_test.Response{
  {
   Status: "success",
   Message: "User retrieved",
-  Data: freeze_test.User{
+  Data: shutter_test.User{
    ID: 1,
    Username: "john",
    Email: "john@example.com",
@@ -38,12 +38,12 @@ version: 0.1.0
  {
   Status: "success",
   Message: "Posts retrieved",
-  Data: []freeze_test.Post{
+  Data: []shutter_test.Post{
    {
     ID: 1,
     Title: "First Post",
     Content: "",
-    Author: freeze_test.User{
+    Author: shutter_test.User{
      ID: 0,
      Username: "",
      Email: "",
@@ -57,7 +57,7 @@ version: 0.1.0
      Metadata: map[string]interface{}(nil),
     },
     Tags: []string(nil),
-    Comments: []freeze_test.Comment(nil),
+    Comments: []shutter_test.Comment(nil),
     Likes: 0,
     Published: true,
     CreatedAt: time.Time{
