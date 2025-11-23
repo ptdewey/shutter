@@ -35,7 +35,7 @@ func TestMultipleValues(t *testing.T) {
     response := handleRequest(request)
 
     // Snapshot both request and response together
-    shutter.SnapMany(t, "request and response", []any{request, response})
+    shutter.SnapMany(t, "title", []any{request, response})
 }
 ```
 

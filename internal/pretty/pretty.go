@@ -23,50 +23,40 @@ func TerminalWidth() int {
 	return 80
 }
 
-func Red(s string) string {
+func hasColor() bool {
+	return os.Getenv("NO_COLOR") == ""
+}
+
+// colorize wraps text with the given color code
+func colorize(s, code string) string {
 	if !hasColor() {
 		return s
 	}
-	return colorRed + s + colorReset
+	return code + s + colorReset
+}
+
+func Red(s string) string {
+	return colorize(s, colorRed)
 }
 
 func Green(s string) string {
-	if !hasColor() {
-		return s
-	}
-	return colorGreen + s + colorReset
+	return colorize(s, colorGreen)
 }
 
 func Yellow(s string) string {
-	if !hasColor() {
-		return s
-	}
-	return colorYellow + s + colorReset
+	return colorize(s, colorYellow)
 }
 
 func Blue(s string) string {
-	if !hasColor() {
-		return s
-	}
-	return colorBlue + s + colorReset
+	return colorize(s, colorBlue)
 }
 
 func Gray(s string) string {
-	if !hasColor() {
-		return s
-	}
-	return colorGray + s + colorReset
+	return colorize(s, colorGray)
 }
 
 func Bold(s string) string {
-	if !hasColor() {
-		return s
-	}
-	return colorBold + s + colorReset
-}
-
-func hasColor() bool {
-	return os.Getenv("NO_COLOR") == ""
+	return colorize(s, colorBold)
 }
 
 func Header(text string) string {

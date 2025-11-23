@@ -27,6 +27,18 @@ func computeDiffLines(old, new *files.Snapshot) []diff.DiffLine {
 	return diff.Histogram(old.Content, new.Content)
 }
 
+// applyToSnapshots applies an operation to all snapshots and returns the count of successful operations
+func applyToSnapshots(snapshots []string, operation func(string) error) (int, error) {
+	successCount := 0
+	for _, snapTitle := range snapshots {
+		if err := operation(snapTitle); err != nil {
+			return successCount, err
+		}
+		successCount++
+	}
+	return successCount, nil
+}
+
 func Review() error {
 	snapshots, err := files.ListNewSnapshots()
 	if err != nil {
@@ -87,20 +99,20 @@ func reviewLoop(snapshots []string) error {
 			case Skip:
 				fmt.Println(pretty.Warning("⊘ Snapshot skipped"))
 			case AcceptAllChoice:
-				for j := i; j < len(snapshots); j++ {
-					if err := files.AcceptSnapshot(snapshots[j]); err != nil {
-						fmt.Println(pretty.Error("✗ Failed to accept snapshot: " + err.Error()))
-					}
+				remaining := snapshots[i:]
+				if _, err := applyToSnapshots(remaining, files.AcceptSnapshot); err != nil {
+					fmt.Println(pretty.Error("✗ Failed to accept snapshot: " + err.Error()))
+					return err
 				}
-				fmt.Printf(pretty.Success("✓ Accepted %d snapshot(s)\n"), len(snapshots)-i)
+				fmt.Printf(pretty.Success("✓ Accepted %d snapshot(s)\n"), len(remaining))
 				return nil
 			case RejectAllChoice:
-				for j := i; j < len(snapshots); j++ {
-					if err := files.RejectSnapshot(snapshots[j]); err != nil {
-						fmt.Println(pretty.Error("✗ Failed to reject snapshot: " + err.Error()))
-					}
+				remaining := snapshots[i:]
+				if _, err := applyToSnapshots(remaining, files.RejectSnapshot); err != nil {
+					fmt.Println(pretty.Error("✗ Failed to reject snapshot: " + err.Error()))
+					return err
 				}
-				fmt.Printf(pretty.Warning("⊘ Rejected %d snapshot(s)\n"), len(snapshots)-i)
+				fmt.Printf(pretty.Warning("⊘ Rejected %d snapshot(s)\n"), len(remaining))
 				return nil
 			case SkipAllChoice:
 				fmt.Printf(pretty.Warning("⊘ Skipped %d snapshot(s)\n"), len(snapshots)-i)
@@ -154,13 +166,12 @@ func AcceptAll() error {
 		return err
 	}
 
-	for _, testName := range snapshots {
-		if err := files.AcceptSnapshot(testName); err != nil {
-			return err
-		}
+	count, err := applyToSnapshots(snapshots, files.AcceptSnapshot)
+	if err != nil {
+		return err
 	}
 
-	fmt.Printf(pretty.Success("✓ Accepted %d snapshot(s)\n"), len(snapshots))
+	fmt.Printf(pretty.Success("✓ Accepted %d snapshot(s)\n"), count)
 	return nil
 }
 
@@ -170,12 +181,11 @@ func RejectAll() error {
 		return err
 	}
 
-	for _, testName := range snapshots {
-		if err := files.RejectSnapshot(testName); err != nil {
-			return err
-		}
+	count, err := applyToSnapshots(snapshots, files.RejectSnapshot)
+	if err != nil {
+		return err
 	}
 
-	fmt.Printf(pretty.Warning("⊘ Rejected %d snapshot(s)\n"), len(snapshots))
+	fmt.Printf(pretty.Warning("⊘ Rejected %d snapshot(s)\n"), count)
 	return nil
 }

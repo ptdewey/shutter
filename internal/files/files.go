@@ -92,6 +92,17 @@ func getSnapshotFileName(snapTitle string, state string) string {
 	}
 }
 
+// getSnapshotPath returns the full path for a snapshot file
+func getSnapshotPath(snapTitle string, state string) (string, error) {
+	snapshotDir, err := getSnapshotDir()
+	if err != nil {
+		return "", err
+	}
+
+	fileName := getSnapshotFileName(snapTitle, state)
+	return filepath.Join(snapshotDir, fileName), nil
+}
+
 func SaveSnapshot(snap *Snapshot, state string) error {
 	snapshotDir, err := getSnapshotDir()
 	if err != nil {
@@ -152,14 +163,15 @@ func ListNewSnapshots() ([]string, error) {
 }
 
 func AcceptSnapshot(snapTitle string) error {
-	snapshotDir, err := getSnapshotDir()
+	newPath, err := getSnapshotPath(snapTitle, "new")
 	if err != nil {
 		return err
 	}
 
-	fileName := SnapshotFileName(snapTitle)
-	newPath := filepath.Join(snapshotDir, fileName+".snap.new")
-	acceptedPath := filepath.Join(snapshotDir, fileName+".snap")
+	acceptedPath, err := getSnapshotPath(snapTitle, "accepted")
+	if err != nil {
+		return err
+	}
 
 	data, err := os.ReadFile(newPath)
 	if err != nil {
@@ -174,13 +186,10 @@ func AcceptSnapshot(snapTitle string) error {
 }
 
 func RejectSnapshot(snapTitle string) error {
-	snapshotDir, err := getSnapshotDir()
+	filePath, err := getSnapshotPath(snapTitle, "new")
 	if err != nil {
 		return err
 	}
-
-	fileName := SnapshotFileName(snapTitle) + ".snap.new"
-	filePath := filepath.Join(snapshotDir, fileName)
 
 	return os.Remove(filePath)
 }

@@ -2,7 +2,6 @@ package pretty
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/ptdewey/shutter/internal/diff"
@@ -11,6 +10,25 @@ import (
 
 func NewSnapshotBox(snap *files.Snapshot) string {
 	return newSnapshotBoxInternal(snap)
+}
+
+// calculateLineNumWidth returns the width needed to display line numbers
+func calculateLineNumWidth(maxLineNum int) int {
+	return len(fmt.Sprintf("%d", maxLineNum))
+}
+
+// formatColoredLine applies color to a line based on diff kind
+func formatColoredLine(line string, kind diff.DiffKind) string {
+	switch kind {
+	case diff.DiffOld:
+		return Red(line)
+	case diff.DiffNew:
+		return Green(line)
+	case diff.DiffShared:
+		return line
+	default:
+		return line
+	}
 }
 
 func DiffSnapshotBox(old, newSnapshot *files.Snapshot, diffLines []diff.DiffLine) string {
@@ -49,7 +67,7 @@ func DiffSnapshotBox(old, newSnapshot *files.Snapshot, diffLines []diff.DiffLine
 	if maxNewNum > maxLineNum {
 		maxLineNum = maxNewNum
 	}
-	lineNumWidth := len(fmt.Sprintf("%d", maxLineNum))
+	lineNumWidth := calculateLineNumWidth(maxLineNum)
 
 	// Top bar with corner (account for both line number columns)
 	topBar := strings.Repeat("─", (lineNumWidth*2)+4) + "┬" +
@@ -86,14 +104,7 @@ func DiffSnapshotBox(old, newSnapshot *files.Snapshot, diffLines []diff.DiffLine
 		maxContentWidth := width - (lineNumWidth * 2) - 8
 		if len(dl.Line) > maxContentWidth {
 			truncated := dl.Line[:maxContentWidth-3] + "..."
-			switch dl.Kind {
-			case diff.DiffOld:
-				formatted = Red(truncated)
-			case diff.DiffNew:
-				formatted = Green(truncated)
-			case diff.DiffShared:
-				formatted = truncated
-			}
+			formatted = formatColoredLine(truncated, dl.Kind)
 		}
 
 		display := fmt.Sprintf("%s %s %s %s", leftNum, rightNum, prefix, formatted)
@@ -116,21 +127,18 @@ func newSnapshotBoxInternal(snap *files.Snapshot) string {
 
 	if snap.Title != "" {
 		sb.WriteString(Blue("  title: ") + snap.Title + "\n")
-		// sb.WriteString(fmt.Sprintf("  title: %s\n", Blue(snap.Title)))
 	}
 	if snap.Test != "" {
-		// sb.WriteString(fmt.Sprintf("  test: %s\n", Blue(snap.Test)))
 		sb.WriteString(Blue("  test: ") + snap.Test + "\n")
 	}
 	if snap.FileName != "" {
-		// sb.WriteString(fmt.Sprintf("  file: %s\n", Gray(snap.FileName)))
 		sb.WriteString(Blue("  file: ") + snap.FileName + "\n")
 	}
 	sb.WriteString("\n")
 
 	lines := strings.Split(snap.Content, "\n")
 	numLines := len(lines)
-	lineNumWidth := len(strconv.Itoa(numLines))
+	lineNumWidth := calculateLineNumWidth(numLines)
 
 	topBar := strings.Repeat("─", lineNumWidth+3) + "┬" +
 		strings.Repeat("─", width-lineNumWidth-2) + "\n"
