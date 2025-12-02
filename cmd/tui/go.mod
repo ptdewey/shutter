@@ -3,9 +3,9 @@ module github.com/ptdewey/shutter/cmd/tui
 go 1.25.2
 
 require (
+	github.com/charmbracelet/bubbles v0.21.0
 	github.com/charmbracelet/bubbletea v1.3.10
 	github.com/charmbracelet/lipgloss v1.1.0
-	github.com/charmbracelet/bubbles v0.21.0
 	github.com/ptdewey/shutter v0.0.0
 )
 

@@ -57,7 +57,7 @@ var (
 )
 
 type model struct {
-	snapshots    []string
+	snapshots    []files.SnapshotInfo
 	current      int
 	newSnap      *files.Snapshot
 	accepted     *files.Snapshot
@@ -103,15 +103,15 @@ func (m *model) loadCurrentSnapshot() error {
 		return nil
 	}
 
-	testName := m.snapshots[m.current]
+	snapshotInfo := m.snapshots[m.current]
 
-	newSnap, err := files.ReadSnapshot(testName, "new")
+	newSnap, err := files.ReadSnapshotFromPath(snapshotInfo.Path)
 	if err != nil {
 		return err
 	}
 	m.newSnap = newSnap
 
-	accepted, err := files.ReadSnapshot(testName, "accepted")
+	accepted, err := files.ReadSnapshotWithDir(snapshotInfo.Dir, snapshotInfo.Title, "accepted")
 	if err == nil {
 		m.accepted = accepted
 		diffLines := computeDiffLines(accepted, newSnap)
@@ -166,8 +166,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "a":
 			// Accept current snapshot
-			testName := m.snapshots[m.current]
-			if err := files.AcceptSnapshot(testName); err != nil {
+			snapshotInfo := m.snapshots[m.current]
+			if err := files.AcceptSnapshotInfo(snapshotInfo); err != nil {
 				m.err = err
 			} else {
 				m.acceptedAll++
@@ -183,8 +183,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "r":
 			// Reject current snapshot
-			testName := m.snapshots[m.current]
-			if err := files.RejectSnapshot(testName); err != nil {
+			snapshotInfo := m.snapshots[m.current]
+			if err := files.RejectSnapshotInfo(snapshotInfo); err != nil {
 				m.err = err
 			} else {
 				m.rejectedAll++
@@ -213,7 +213,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "A":
 			// Accept all remaining
 			for i := m.current; i < len(m.snapshots); i++ {
-				if err := files.AcceptSnapshot(m.snapshots[i]); err != nil {
+				if err := files.AcceptSnapshotInfo(m.snapshots[i]); err != nil {
 					m.err = err
 					break
 				}
@@ -225,7 +225,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "R":
 			// Reject all remaining
 			for i := m.current; i < len(m.snapshots); i++ {
-				if err := files.RejectSnapshot(m.snapshots[i]); err != nil {
+				if err := files.RejectSnapshotInfo(m.snapshots[i]); err != nil {
 					m.err = err
 					break
 				}
@@ -327,7 +327,7 @@ func (m model) View() string {
 	}
 
 	// Header
-	snapshotTitle := m.snapshots[m.current] // fallback to test name
+	snapshotTitle := m.snapshots[m.current].Title // fallback to snapshot title
 	if m.newSnap != nil && m.newSnap.Title != "" {
 		snapshotTitle = m.newSnap.Title
 	}
@@ -339,7 +339,7 @@ func (m model) View() string {
 	headerStyled := statusBarStyle.Width(m.width).Render(header)
 
 	// Footer with snapshot filename and scroll info
-	snapshotFile := files.SnapshotFileName(m.snapshots[m.current]) + ".snap.new"
+	snapshotFile := files.SnapshotFileName(m.snapshots[m.current].Title) + ".snap.new"
 	fileInfo := helpStyle.Render(snapshotFile)
 	scrollInfo := fmt.Sprintf("%3.f%%", m.viewport.ScrollPercent()*100)
 	scrollStyled := helpStyle.Render(scrollInfo)
@@ -375,8 +375,8 @@ func acceptAll() error {
 		return err
 	}
 
-	for _, testName := range snapshots {
-		if err := files.AcceptSnapshot(testName); err != nil {
+	for _, snapshotInfo := range snapshots {
+		if err := files.AcceptSnapshotInfo(snapshotInfo); err != nil {
 			return err
 		}
 	}
@@ -391,8 +391,8 @@ func rejectAll() error {
 		return err
 	}
 
-	for _, testName := range snapshots {
-		if err := files.RejectSnapshot(testName); err != nil {
+	for _, snapshotInfo := range snapshots {
+		if err := files.RejectSnapshotInfo(snapshotInfo); err != nil {
 			return err
 		}
 	}

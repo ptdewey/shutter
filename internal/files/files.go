@@ -63,6 +63,8 @@ func Deserialize(raw string) (*Snapshot, error) {
 	return snap, nil
 }
 
+// getSnapshotDir finds the nearest __snapshots__ directory relative to the caller,
+// creating one if it doesn't exist. This is used when creating new snapshots.
 func getSnapshotDir() (string, error) {
 	// NOTE: maybe this could be configurable?
 	// Storing snapshots in root may be desirable in some cases
@@ -72,6 +74,56 @@ func getSnapshotDir() (string, error) {
 	}
 
 	return snapshotDir, nil
+}
+
+// findAllSnapshotDirs recursively finds all __snapshots__ directories starting from root
+func findAllSnapshotDirs(root string) ([]string, error) {
+	var snapshotDirs []string
+
+	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		// Skip hidden directories and common ignore paths
+		if info.IsDir() && len(info.Name()) > 0 && info.Name()[0] == '.' {
+			return filepath.SkipDir
+		}
+		if info.IsDir() && (info.Name() == "node_modules" || info.Name() == "vendor") {
+			return filepath.SkipDir
+		}
+
+		if info.IsDir() && info.Name() == "__snapshots__" {
+			snapshotDirs = append(snapshotDirs, path)
+		}
+
+		return nil
+	})
+
+	return snapshotDirs, err
+}
+
+// findProjectRoot finds the root of the project by looking for go.mod
+func findProjectRoot() (string, error) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+
+	dir := cwd
+	for {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir, nil
+		}
+
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			// Reached filesystem root without finding go.mod
+			// Fall back to current directory
+			return cwd, nil
+		}
+		dir = parent
+	}
 }
 
 // TODO: make this use the snapshot title rather than the test name
@@ -121,6 +173,21 @@ func ReadSnapshot(snapTitle string, state string) (*Snapshot, error) {
 		return nil, err
 	}
 
+	return ReadSnapshotWithDir(snapshotDir, snapTitle, state)
+}
+
+// ReadSnapshotFromPath reads a snapshot directly from a full file path
+func ReadSnapshotFromPath(filePath string) (*Snapshot, error) {
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	return Deserialize(string(data))
+}
+
+// ReadSnapshotWithDir reads a snapshot from a specific directory
+func ReadSnapshotWithDir(snapshotDir, snapTitle string, state string) (*Snapshot, error) {
 	fileName := getSnapshotFileName(snapTitle, state)
 	filePath := filepath.Join(snapshotDir, fileName)
 
@@ -140,26 +207,63 @@ func ReadNew(snapTitle string) (*Snapshot, error) {
 	return ReadSnapshot(snapTitle, "new")
 }
 
-func ListNewSnapshots() ([]string, error) {
-	snapshotDir, err := getSnapshotDir()
+// SnapshotInfo contains metadata about a snapshot file including its full path
+type SnapshotInfo struct {
+	Title string // The snapshot title (used as identifier)
+	Path  string // Full path to the snapshot file
+	Dir   string // Directory containing the snapshot
+}
+
+func ListNewSnapshots() ([]SnapshotInfo, error) {
+	projectRoot, err := findProjectRoot()
 	if err != nil {
 		return nil, err
 	}
 
-	entries, err := os.ReadDir(snapshotDir)
+	snapshotDirs, err := findAllSnapshotDirs(projectRoot)
 	if err != nil {
 		return nil, err
 	}
 
-	var newSnapshots []string
-	for _, entry := range entries {
-		if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".snap.new") {
-			name := strings.TrimSuffix(entry.Name(), ".snap.new")
-			newSnapshots = append(newSnapshots, name)
+	var newSnapshots []SnapshotInfo
+	for _, dir := range snapshotDirs {
+		entries, err := os.ReadDir(dir)
+		if err != nil {
+			// Skip directories we can't read
+			continue
+		}
+
+		for _, entry := range entries {
+			if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".snap.new") {
+				name := strings.TrimSuffix(entry.Name(), ".snap.new")
+				fullPath := filepath.Join(dir, entry.Name())
+				newSnapshots = append(newSnapshots, SnapshotInfo{
+					Title: name,
+					Path:  fullPath,
+					Dir:   dir,
+				})
+			}
 		}
 	}
 
 	return newSnapshots, nil
+}
+
+// AcceptSnapshotInfo accepts a snapshot using SnapshotInfo
+func AcceptSnapshotInfo(info SnapshotInfo) error {
+	newPath := info.Path
+	acceptedPath := filepath.Join(info.Dir, getSnapshotFileName(info.Title, "accepted"))
+
+	data, err := os.ReadFile(newPath)
+	if err != nil {
+		return err
+	}
+
+	if err := os.WriteFile(acceptedPath, data, 0644); err != nil {
+		return err
+	}
+
+	return os.Remove(newPath)
 }
 
 func AcceptSnapshot(snapTitle string) error {
@@ -183,6 +287,11 @@ func AcceptSnapshot(snapTitle string) error {
 	}
 
 	return os.Remove(newPath)
+}
+
+// RejectSnapshotInfo rejects a snapshot using SnapshotInfo
+func RejectSnapshotInfo(info SnapshotInfo) error {
+	return os.Remove(info.Path)
 }
 
 func RejectSnapshot(snapTitle string) error {

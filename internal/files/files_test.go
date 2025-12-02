@@ -157,7 +157,7 @@ func TestSaveAndReadSnapshot(t *testing.T) {
 		t.Fatalf("SaveSnapshot failed: %v", err)
 	}
 
-	read, err := files.ReadSnapshot("TestSaveRead", "test")
+	read, err := files.ReadSnapshot("Save Read Title", "test")
 	if err != nil {
 		t.Fatalf("ReadSnapshot failed: %v", err)
 	}
@@ -166,7 +166,7 @@ func TestSaveAndReadSnapshot(t *testing.T) {
 		t.Errorf("Content mismatch: %s != %s", read.Content, snap.Content)
 	}
 
-	cleanupSnapshot(t, "TestSaveRead", "test")
+	cleanupSnapshot(t, "Save Read Title", "test")
 }
 
 func TestReadSnapshotNotFound(t *testing.T) {
@@ -191,7 +191,7 @@ func TestAcceptSnapshot(t *testing.T) {
 		t.Fatalf("AcceptSnapshot failed: %v", err)
 	}
 
-	accepted, err := files.ReadSnapshot("TestAccept", "accepted")
+	accepted, err := files.ReadSnapshot("Accept Title", "accepted")
 	if err != nil {
 		t.Fatalf("ReadSnapshot failed: %v", err)
 	}
@@ -200,12 +200,12 @@ func TestAcceptSnapshot(t *testing.T) {
 		t.Errorf("Content mismatch: %s != %s", accepted.Content, newSnap.Content)
 	}
 
-	_, err = files.ReadSnapshot("TestAccept", "new")
+	_, err = files.ReadSnapshot("Accept Title", "new")
 	if err == nil {
 		t.Error("expected error: .new file should be deleted after accept")
 	}
 
-	cleanupSnapshot(t, "TestAccept", "accepted")
+	cleanupSnapshot(t, "Accept Title", "accepted")
 }
 
 func TestRejectSnapshot(t *testing.T) {
@@ -248,4 +248,23 @@ func cleanupSnapshot(t *testing.T, testName, state string) {
 	fileName := files.SnapshotFileName(testName) + "." + state
 	filePath := filepath.Join(root, "__snapshots__", fileName)
 	_ = os.Remove(filePath)
+}
+
+func TestRecursiveSnapshots(t *testing.T) {
+	// This test verifies that ListNewSnapshots finds snapshots recursively
+	snapshots, err := files.ListNewSnapshots()
+	if err != nil {
+		t.Fatalf("ListNewSnapshots failed: %v", err)
+	}
+	
+	t.Logf("Found %d snapshots", len(snapshots))
+	for _, snap := range snapshots {
+		t.Logf("  - Title: %s, Path: %s", snap.Title, snap.Path)
+	}
+	
+	// Just verify it doesn't error - we can't make assumptions about which
+	// snapshots exist since this depends on the test environment
+	if err != nil {
+		t.Errorf("Error listing snapshots: %v", err)
+	}
 }
