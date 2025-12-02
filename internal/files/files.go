@@ -235,6 +235,7 @@ func ListNewSnapshots() ([]SnapshotInfo, error) {
 
 		for _, entry := range entries {
 			if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".snap.new") {
+				// Remove .snap.new extension to get the title
 				name := strings.TrimSuffix(entry.Name(), ".snap.new")
 				fullPath := filepath.Join(dir, entry.Name())
 				newSnapshots = append(newSnapshots, SnapshotInfo{

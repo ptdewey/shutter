@@ -33,7 +33,7 @@ func formatColoredLine(line string, kind diff.DiffKind) string {
 
 func DiffSnapshotBox(old, newSnapshot *files.Snapshot, diffLines []diff.DiffLine) string {
 	width := TerminalWidth()
-	snapshotFileName := files.SnapshotFileName(newSnapshot.Test) + ".snap"
+	snapshotFileName := files.SnapshotFileName(newSnapshot.Title) + ".snap"
 
 	var sb strings.Builder
 	sb.WriteString("─── " + "Snapshot Diff " + strings.Repeat("─", width-15) + "\n\n")

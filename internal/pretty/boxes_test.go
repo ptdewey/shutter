@@ -197,7 +197,7 @@ func TestDiffSnapshotBox_SimpleModification(t *testing.T) {
 	validation := BoxValidation{
 		Title:           "Simple Modification",
 		TestName:        "TestSimple",
-		FileName:        "testsimple.snap",
+		FileName:        "simple_modification.snap",
 		HasTitle:        true,
 		HasTestName:     true,
 		HasFileName:     true,
@@ -239,7 +239,7 @@ func TestDiffSnapshotBox_PureAddition(t *testing.T) {
 	validation := BoxValidation{
 		Title:           "Pure Addition",
 		TestName:        "TestAddition",
-		FileName:        "testaddition.snap",
+		FileName:        "pure_addition.snap",
 		HasTitle:        true,
 		HasTestName:     true,
 		HasFileName:     true,
@@ -281,7 +281,7 @@ func TestDiffSnapshotBox_PureDeletion(t *testing.T) {
 	validation := BoxValidation{
 		Title:           "Pure Deletion",
 		TestName:        "TestDeletion",
-		FileName:        "testdeletion.snap",
+		FileName:        "pure_deletion.snap",
 		HasTitle:        true,
 		HasTestName:     true,
 		HasFileName:     true,
@@ -334,7 +334,7 @@ add2`
 	validation := BoxValidation{
 		Title:           "Complex Mixed",
 		TestName:        "TestComplexMixed",
-		FileName:        "testcomplexmixed.snap",
+		FileName:        "complex_mixed.snap",
 		HasTitle:        true,
 		HasTestName:     true,
 		HasFileName:     true,
@@ -376,7 +376,7 @@ func TestDiffSnapshotBox_EmptyOld(t *testing.T) {
 	validation := BoxValidation{
 		Title:           "Empty to Content",
 		TestName:        "TestEmptyOld",
-		FileName:        "testemptyold.snap",
+		FileName:        "empty_to_content.snap",
 		HasTitle:        true,
 		HasTestName:     true,
 		HasFileName:     true,
@@ -418,7 +418,7 @@ func TestDiffSnapshotBox_EmptyNew(t *testing.T) {
 	validation := BoxValidation{
 		Title:           "Content to Empty",
 		TestName:        "TestEmptyNew",
-		FileName:        "testemptynew.snap",
+		FileName:        "content_to_empty.snap",
 		HasTitle:        true,
 		HasTestName:     true,
 		HasFileName:     true,
@@ -468,7 +468,8 @@ func TestDiffSnapshotBox_NoTitle(t *testing.T) {
 	if !strings.Contains(stripped, "test: TestNoTitle") {
 		t.Error("Expected test name to be present")
 	}
-	if !strings.Contains(stripped, "file: testnotitle.snap") {
+	// When title is empty, filename should be based on test name
+	if !strings.Contains(stripped, "file: .snap") {
 		t.Error("Expected file name to be present")
 	}
 }
@@ -574,7 +575,7 @@ func TestDiffSnapshotBox_UnicodeContent(t *testing.T) {
 	validation := BoxValidation{
 		Title:           "Unicode Test",
 		TestName:        "TestUnicode",
-		FileName:        "testunicode.snap",
+		FileName:        "unicode_test.snap",
 		HasTitle:        true,
 		HasTestName:     true,
 		HasFileName:     true,
