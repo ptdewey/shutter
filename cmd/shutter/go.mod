@@ -1,4 +1,4 @@
-module github.com/ptdewey/shutter/cmd/tui
+module github.com/ptdewey/shutter/cmd/shutter
 
 go 1.25.2
 
