@@ -6,7 +6,7 @@ require (
 	github.com/charmbracelet/bubbles v0.21.0
 	github.com/charmbracelet/bubbletea v1.3.10
 	github.com/charmbracelet/lipgloss v1.1.0
-	github.com/ptdewey/shutter v0.0.0
+	github.com/ptdewey/shutter v0.1.3
 )
 
 require (
@@ -28,5 +28,3 @@ require (
 	golang.org/x/sys v0.36.0 // indirect
 	golang.org/x/text v0.3.8 // indirect
 )
-
-replace github.com/ptdewey/shutter => ../..

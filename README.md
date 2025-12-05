@@ -12,6 +12,13 @@ A [birdie](https://github.com/giacomocavalieri/birdie) and [insta](https://githu
 go get github.com/ptdewey/shutter
 ```
 
+The review TUI is shipped separately to avoid adding unnecessary project dependencies (installation of the TUI is recommended):
+
+```sh
+# executable is installed as `shutter`
+go install github.com/ptdewey/shutter/cmd/shutter@latest
+```
+
 ## Usage
 
 ### Basic Usage
@@ -176,10 +183,10 @@ shutter.SnapString(t, "title", content, options...)
 
 ### Reviewing Snapshots
 
-To review a set of snapshots, run:
+To review a set of snapshots, run (CLI version -- not recommended):
 
 ```sh
-go run github.com/ptdewey/shutter/cmd/shutter review
+go run github.com/ptdewey/shutter/cmd/cli review
 ```
 
 Shutter can also be used programmatically:
@@ -207,8 +214,10 @@ Shutter also includes (in a separate Go module) a [Bubbletea](https://github.com
 
 ### TUI Usage
 
+After installing the TUI:
+
 ```sh
-go run github.com/ptdewey/shutter/cmd/tui review
+shutter
 ```
 
 #### Interactive Controls
@@ -225,10 +234,10 @@ go run github.com/ptdewey/shutter/cmd/tui review
 
 ```sh
 # Accept all new snapshots without review
-go run github.com/ptdewey/shutter/cmd/tui accept-all
+shutter accept-all
 
 # Reject all new snapshots without review
-go run github.com/ptdewey/shutter/cmd/tui reject-all
+shutter reject-all
 ```
 
 ## Other Libraries

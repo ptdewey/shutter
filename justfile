@@ -1,3 +1,12 @@
+[private]
+default: build review
+
+build:
+    @pushd ./cmd/shutter && go build -o shutter ./main.go && popd
+
+review:
+    @./cmd/shutter/shutter
+
 clean-test:
     @rm -rf ./__snapshots__
     @go test ./... -cover -coverprofile=cover.out
@@ -5,15 +14,8 @@ clean-test:
 test:
     @go test ./... -cover -coverprofile=cover.out
 
-run:
-    @go run cmd/shutter/main.go
+cli:
+    @go run cmd/cli/main.go
 
 clean:
     @rm -rf ./__snapshots__
-
-tui:
-    @pushd ./cmd/tui && go build -o shutter ./main.go && popd
-    @./cmd/tui/shutter
-
-review:
-    @./cmd/tui/shutter
