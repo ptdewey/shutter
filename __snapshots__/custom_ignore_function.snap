@@ -1,0 +1,10 @@
+---
+title: Custom Ignore Function
+test_name: TestCustomIgnore
+file_name: ignore_test.go
+version: 0.1.0
+---
+{
+  "grade": "A",
+  "name": "John Doe"
+}

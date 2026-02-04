@@ -1,0 +1,27 @@
+---
+title: Multiple Scrubbers
+test_name: TestBuiltInScrubbers
+file_name: scrubbers_test.go
+version: 0.1.0
+---
+{
+  "api_key": "<API_KEY>",
+  "backup_card": "<CREDIT_CARD>",
+  "backup_email": "<EMAIL>",
+  "birth_date": "<DATE>",
+  "card_number": "<CREDIT_CARD>",
+  "client_ip": "<IP>",
+  "created_at": "<TIMESTAMP>",
+  "email": "<EMAIL>",
+  "jwt_token": "<JWT>",
+  "message": "Connection from <IP>",
+  "name": "John Doe",
+  "server_ip": "<IP>",
+  "session_id": "<UUID>",
+  "stripe_key": "<API_KEY>",
+  "unix_created": <UNIX_TS>,
+  "unix_updated": <UNIX_TS>,
+  "updated_at": "<TIMESTAMP>",
+  "us_format_date": "<DATE>",
+  "user_id": "<UUID>"
+}

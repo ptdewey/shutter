@@ -7,7 +7,7 @@
       "title": "Snapshot",
       "scope": "source.snapshot",
       "file-types": [
-        "snapshot"
+        "snap"
       ],
       "injection-regex": "^snapshot$",
       "class-name": "TreeSitterSnapshot"

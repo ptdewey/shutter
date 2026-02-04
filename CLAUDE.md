@@ -73,4 +73,4 @@ cd ./cmd/shutter && go build -o shutter ./main.go  # Build TUI
 
 - Root module (`go.mod`): Main library - Go 1.23.12+
 - TUI module (`cmd/shutter/go.mod`): Separate module with Bubbletea dependencies - Go 1.25.2
-- `/editors/`: Tree-sitter grammar for snapshot format (Node.js/Rust/Python/Swift bindings)
+- `/editor/tree-sitter-snapshot/`: Tree-sitter grammar for snapshot format (Node.js/Rust/Python/Swift bindings)

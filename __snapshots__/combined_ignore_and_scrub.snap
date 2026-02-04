@@ -1,0 +1,13 @@
+---
+title: Combined Ignore and Scrub
+test_name: TestCombinedIgnoreAndScrub
+file_name: ignore_test.go
+version: 0.1.0
+---
+{
+  "created_at": "<TIMESTAMP>",
+  "email": "<EMAIL>",
+  "ip_address": "<IP>",
+  "name": "John Doe",
+  "user_id": "<UUID>"
+}

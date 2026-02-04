@@ -164,6 +164,10 @@ func SaveSnapshot(snap *Snapshot, state string) error {
 	fileName := getSnapshotFileName(snap.Title, state)
 	filePath := filepath.Join(snapshotDir, fileName)
 
+	if err := os.MkdirAll(filepath.Dir(filePath), 0755); err != nil {
+		return err
+	}
+
 	return os.WriteFile(filePath, []byte(snap.Serialize()), 0644)
 }
 

@@ -1,0 +1,92 @@
+==================
+Snapshot with single field
+==================
+---
+title: Test
+---
+body content
+
+---
+
+(source_file
+  (front_matter
+    (delimiter)
+    (field
+      (field_name)
+      (field_value))
+    (delimiter))
+  (body))
+
+==================
+Snapshot with multiple fields
+==================
+---
+title: Test Snapshot
+test_name: TestExample
+file_name: example_test.go
+version: 0.1.0
+---
+{"key": "value"}
+
+---
+
+(source_file
+  (front_matter
+    (delimiter)
+    (field
+      (field_name)
+      (field_value))
+    (field
+      (field_name)
+      (field_value))
+    (field
+      (field_name)
+      (field_value))
+    (field
+      (field_name)
+      (field_value))
+    (delimiter))
+  (body))
+
+==================
+Empty field value
+==================
+---
+title:
+test_name: TestEmpty
+---
+content
+
+---
+
+(source_file
+  (front_matter
+    (delimiter)
+    (field
+      (field_name))
+    (field
+      (field_name)
+      (field_value))
+    (delimiter))
+  (body))
+
+==================
+Multiline body
+==================
+---
+title: Multiline
+---
+line one
+line two
+line three
+
+---
+
+(source_file
+  (front_matter
+    (delimiter)
+    (field
+      (field_name)
+      (field_value))
+    (delimiter))
+  (body))
