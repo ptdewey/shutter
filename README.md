@@ -2,9 +2,7 @@
 
 A [birdie](https://github.com/giacomocavalieri/birdie) and [insta](https://github.com/mitsuhiko/insta) inspired snapshot testing library for Go.
 
-![New snapshot screen](./assets/screenshot-new.png "New snapshot view")
-
-![Snapshot review CLI](./assets/screenshot-diff-cli.png "Snapshot diff view (CLI)")
+![Snapshot review TUI](./assets/screenshot-tui.png "Snapshot diff view (TUI)")
 
 ## Installation
 
