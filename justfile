@@ -19,3 +19,11 @@ cli:
 
 clean:
     @rm -rf ./__snapshots__
+
+# Determine next version from conventional commits and tag both modules
+release:
+    @./scripts/version.sh
+
+# Preview version bump without creating tags
+release-dry:
+    @./scripts/version.sh --dry-run
