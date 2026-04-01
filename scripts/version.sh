@@ -80,7 +80,10 @@ echo ""
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     jj tag set "$NEW_VERSION" "cmd/shutter/$NEW_VERSION"
-    jj git push --tags
+    # jj git push doesn't support tags, so export to git and push via git
+    jj git export
+    GIT_DIR=$(jj git root)
+    git --git-dir="$GIT_DIR" push origin "$NEW_VERSION" "cmd/shutter/$NEW_VERSION"
     echo "Done. Tagged and pushed $NEW_VERSION"
 else
     echo "Aborted."
