@@ -8,8 +8,12 @@ import (
 	"github.com/ptdewey/shutter/internal/files"
 )
 
-func NewSnapshotBox(snap *files.Snapshot) string {
-	return newSnapshotBoxInternal(snap)
+func NewSnapshotBox(snap *files.Snapshot, width ...int) string {
+	w := TerminalWidth()
+	if len(width) > 0 && width[0] > 0 {
+		w = width[0]
+	}
+	return newSnapshotBoxInternal(snap, w)
 }
 
 // calculateLineNumWidth returns the width needed to display line numbers
@@ -31,8 +35,11 @@ func formatColoredLine(line string, kind diff.DiffKind) string {
 	}
 }
 
-func DiffSnapshotBox(old, newSnapshot *files.Snapshot, diffLines []diff.DiffLine) string {
+func DiffSnapshotBox(old, newSnapshot *files.Snapshot, diffLines []diff.DiffLine, widthOpt ...int) string {
 	width := TerminalWidth()
+	if len(widthOpt) > 0 && widthOpt[0] > 0 {
+		width = widthOpt[0]
+	}
 	snapshotFileName := files.SnapshotFileName(newSnapshot.Title) + ".snap"
 
 	var sb strings.Builder
@@ -99,16 +106,40 @@ func DiffSnapshotBox(old, newSnapshot *files.Snapshot, diffLines []diff.DiffLine
 			formatted = dl.Line
 		}
 
-		// Adjust for actual display length considering ANSI codes
+		// Wrap long lines instead of truncating
 		// Account for: 2 spaces padding + 2 line number columns + 2 spaces between + prefix + space
 		maxContentWidth := width - (lineNumWidth * 2) - 8
-		if len(dl.Line) > maxContentWidth {
-			truncated := dl.Line[:maxContentWidth-3] + "..."
-			formatted = formatColoredLine(truncated, dl.Kind)
+		if maxContentWidth < 20 {
+			maxContentWidth = 20
 		}
 
-		display := fmt.Sprintf("%s %s %s %s", leftNum, rightNum, prefix, formatted)
-		sb.WriteString(fmt.Sprintf("  %s\n", display))
+		if len(dl.Line) > maxContentWidth {
+			// Emit wrapped chunks with proper gutter alignment
+			line := dl.Line
+			first := true
+			for len(line) > 0 {
+				chunk := line
+				if len(chunk) > maxContentWidth {
+					chunk = line[:maxContentWidth]
+					line = line[maxContentWidth:]
+				} else {
+					line = ""
+				}
+				coloredChunk := formatColoredLine(chunk, dl.Kind)
+				if first {
+					display := fmt.Sprintf("%s %s %s %s", leftNum, rightNum, prefix, coloredChunk)
+					sb.WriteString(fmt.Sprintf("  %s\n", display))
+					first = false
+				} else {
+					pad := strings.Repeat(" ", lineNumWidth)
+					display := fmt.Sprintf("%s %s %s %s", pad, pad, "│", coloredChunk)
+					sb.WriteString(fmt.Sprintf("  %s\n", display))
+				}
+			}
+		} else {
+			display := fmt.Sprintf("%s %s %s %s", leftNum, rightNum, prefix, formatted)
+			sb.WriteString(fmt.Sprintf("  %s\n", display))
+		}
 	}
 
 	// Bottom bar with corner (account for both line number columns)
@@ -119,8 +150,7 @@ func DiffSnapshotBox(old, newSnapshot *files.Snapshot, diffLines []diff.DiffLine
 	return sb.String()
 }
 
-func newSnapshotBoxInternal(snap *files.Snapshot) string {
-	width := TerminalWidth()
+func newSnapshotBoxInternal(snap *files.Snapshot, width int) string {
 
 	var sb strings.Builder
 	sb.WriteString("─── " + "New Snapshot " + strings.Repeat("─", width-15) + "\n\n")
@@ -148,12 +178,36 @@ func newSnapshotBoxInternal(snap *files.Snapshot) string {
 		lineNum := fmt.Sprintf("%*d", lineNumWidth, i+1)
 		prefix := fmt.Sprintf("%s %s", Green(lineNum), Green("+"))
 
-		if len(line) > width-len(prefix)-4 {
-			line = line[:width-len(prefix)-7] + "..."
+		maxContentWidth := width - lineNumWidth - 6
+		if maxContentWidth < 20 {
+			maxContentWidth = 20
 		}
 
-		display := fmt.Sprintf("%s %s", prefix, Green(line))
-		sb.WriteString(fmt.Sprintf("  %s\n", display))
+		if len(line) > maxContentWidth {
+			remaining := line
+			first := true
+			for len(remaining) > 0 {
+				chunk := remaining
+				if len(chunk) > maxContentWidth {
+					chunk = remaining[:maxContentWidth]
+					remaining = remaining[maxContentWidth:]
+				} else {
+					remaining = ""
+				}
+				if first {
+					display := fmt.Sprintf("%s %s", prefix, Green(chunk))
+					sb.WriteString(fmt.Sprintf("  %s\n", display))
+					first = false
+				} else {
+					pad := strings.Repeat(" ", lineNumWidth)
+					display := fmt.Sprintf("%s %s %s", pad, "│", Green(chunk))
+					sb.WriteString(fmt.Sprintf("  %s\n", display))
+				}
+			}
+		} else {
+			display := fmt.Sprintf("%s %s", prefix, Green(line))
+			sb.WriteString(fmt.Sprintf("  %s\n", display))
+		}
 	}
 
 	bottomBar := strings.Repeat("─", lineNumWidth+3) + "┴" +

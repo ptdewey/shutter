@@ -258,10 +258,10 @@ func (m *model) updateViewportContent() {
 
 	// Show diff or new snapshot
 	if m.accepted != nil && m.diffLines != nil {
-		b.WriteString(pretty.DiffSnapshotBox(m.accepted, m.newSnap, m.diffLines))
+		b.WriteString(pretty.DiffSnapshotBox(m.accepted, m.newSnap, m.diffLines, m.width))
 	} else {
 		if m.newSnap != nil {
-			b.WriteString(pretty.NewSnapshotBox(m.newSnap))
+			b.WriteString(pretty.NewSnapshotBox(m.newSnap, m.width))
 		}
 	}
 

@@ -256,12 +256,12 @@ func TestRecursiveSnapshots(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ListNewSnapshots failed: %v", err)
 	}
-	
+
 	t.Logf("Found %d snapshots", len(snapshots))
 	for _, snap := range snapshots {
 		t.Logf("  - Title: %s, Path: %s", snap.Title, snap.Path)
 	}
-	
+
 	// Just verify it doesn't error - we can't make assumptions about which
 	// snapshots exist since this depends on the test environment
 	if err != nil {
