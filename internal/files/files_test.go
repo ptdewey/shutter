@@ -268,3 +268,52 @@ func TestRecursiveSnapshots(t *testing.T) {
 		t.Errorf("Error listing snapshots: %v", err)
 	}
 }
+
+func TestListNewSnapshotsNested(t *testing.T) {
+	// Run inside a fresh tempdir with its own go.mod so findProjectRoot
+	// scopes the scan to this test.
+	tmp := t.TempDir()
+	if err := os.WriteFile(filepath.Join(tmp, "go.mod"), []byte("module test\n"), 0644); err != nil {
+		t.Fatalf("write go.mod: %v", err)
+	}
+
+	origCwd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("getwd: %v", err)
+	}
+	if err := os.Chdir(tmp); err != nil {
+		t.Fatalf("chdir: %v", err)
+	}
+	t.Cleanup(func() { _ = os.Chdir(origCwd) })
+
+	// Create a nested .snap.new under __snapshots__/sub/
+	nestedDir := filepath.Join(tmp, "__snapshots__", "sub")
+	if err := os.MkdirAll(nestedDir, 0755); err != nil {
+		t.Fatalf("mkdirall: %v", err)
+	}
+	nestedPath := filepath.Join(nestedDir, "leaf.snap.new")
+	if err := os.WriteFile(nestedPath, []byte("---\ntitle: sub/leaf\n---\nbody"), 0644); err != nil {
+		t.Fatalf("write nested: %v", err)
+	}
+	// Also a flat one at the top level of __snapshots__/
+	flatPath := filepath.Join(tmp, "__snapshots__", "flat.snap.new")
+	if err := os.WriteFile(flatPath, []byte("---\ntitle: flat\n---\nbody"), 0644); err != nil {
+		t.Fatalf("write flat: %v", err)
+	}
+
+	snapshots, err := files.ListNewSnapshots()
+	if err != nil {
+		t.Fatalf("ListNewSnapshots: %v", err)
+	}
+
+	titles := map[string]string{}
+	for _, s := range snapshots {
+		titles[s.Title] = s.Path
+	}
+	if got, ok := titles["sub/leaf"]; !ok || got != nestedPath {
+		t.Errorf("expected nested title 'sub/leaf' at %s, got titles=%v", nestedPath, titles)
+	}
+	if got, ok := titles["flat"]; !ok || got != flatPath {
+		t.Errorf("expected flat title 'flat' at %s, got titles=%v", flatPath, titles)
+	}
+}

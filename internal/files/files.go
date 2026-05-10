@@ -231,23 +231,31 @@ func ListNewSnapshots() ([]SnapshotInfo, error) {
 
 	var newSnapshots []SnapshotInfo
 	for _, dir := range snapshotDirs {
-		entries, err := os.ReadDir(dir)
-		if err != nil {
-			// Skip directories we can't read
-			continue
-		}
-
-		for _, entry := range entries {
-			if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".snap.new") {
-				// Remove .snap.new extension to get the title
-				name := strings.TrimSuffix(entry.Name(), ".snap.new")
-				fullPath := filepath.Join(dir, entry.Name())
-				newSnapshots = append(newSnapshots, SnapshotInfo{
-					Title: name,
-					Path:  fullPath,
-					Dir:   dir,
-				})
+		walkErr := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
 			}
+			if info.IsDir() || !strings.HasSuffix(info.Name(), ".snap.new") {
+				return nil
+			}
+			rel, err := filepath.Rel(dir, path)
+			if err != nil {
+				return err
+			}
+			// Title is the path relative to the __snapshots__ dir, with the
+			// .snap.new extension removed. Snapshots saved with titles
+			// containing "/" live in nested subdirectories.
+			title := strings.TrimSuffix(filepath.ToSlash(rel), ".snap.new")
+			newSnapshots = append(newSnapshots, SnapshotInfo{
+				Title: title,
+				Path:  path,
+				Dir:   dir,
+			})
+			return nil
+		})
+		if walkErr != nil {
+			// Skip directories we can't walk
+			continue
 		}
 	}
 
